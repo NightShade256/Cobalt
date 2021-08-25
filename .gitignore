@@ -1,0 +1,15 @@
+# Build Artifacts
+/bin
+/dep
+/obj
+
+# Editor Config
+/.vscode
+
+# ROMs and Saves
+*.gb
+*.gbc
+*.sav
+
+# Executables
+*.exe
