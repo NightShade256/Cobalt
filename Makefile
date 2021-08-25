@@ -15,8 +15,8 @@ ifneq ($(OS),Windows_NT)
     RM_RF := rm -rf
     MKDIR_P := mkdir -p
 else
-    RM_RF := rmdir /s /q
-    MKDIR_P := mkdir
+    RM_RF := -rmdir /s /q
+    MKDIR_P := -mkdir
 endif
 
 RGBASM  := rgbasm

@@ -1,3 +1,5 @@
+SECTION "Helpers", ROM0
+
 ;;; Copy memory the size of BC from DE to HL.
 MemCpy::
     ld a, [de]
