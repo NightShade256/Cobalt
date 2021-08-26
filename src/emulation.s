@@ -123,3 +123,98 @@ ChipOp_ANNN:
     ld [wChip8IndexReg + 1], a
 
     jp MainLoop
+
+;;;; DXYN
+ChipOp_DXYN:
+    ; Extract N into its register
+    ld a, c
+    and $0F
+    ldh [hSpriteSize], a
+
+    ; Extract X into B
+    ld a, b
+    and $0F
+    ld h, HIGH(wChip8GPR)
+    ld l, a
+    ld a, [hl]
+    and $3F
+    ld b, a
+
+    ; Extract Y into C
+    ld a, c
+    and $F0
+    swap a
+    ld l, a
+    ld a, [hl]
+    and $1F
+    ld c, a
+
+    ; Set V[F] to 0
+    ld l, $0F
+    ld [hl], $00
+
+    ; Setup HL to point to the Chip8 sprite
+    ld a, [wChip8IndexReg + 0]
+    ld h, a
+    ld a, [wChip8IndexReg + 1]
+    ld l, a
+
+.forNLoop:
+    ; Compute Y effective, essentially it is Y coordinate + N
+    inc c
+
+    ; preserve X and Y coordinates
+    push bc
+
+    ; load the sprite data into D
+    ld a, [hl+]
+    ld d, a
+
+    push hl
+
+    ; compute the tile index where we are rendering
+    ld a, b
+    srl a
+    srl a
+    srl a
+    add c
+
+    ; compute address of the tile we are rendering
+    sla a
+    sla a
+    sla a
+    ld l, a
+    ld a, $00
+    adc HIGH(wChip8VRAM)
+    ld h, a
+
+    ; add Y offset
+    ld a, c
+    and $07
+    sla a
+    add l
+    ld l, a
+    ld a, h
+    adc $00
+    ld h, a
+
+
+    ld a, [hl]
+    xor d
+    ld [hl], a
+
+    pop hl
+
+    ; restore X and Y coordinates
+    pop bc
+
+    ; decrement N
+    ldh a, [hSpriteSize]
+    dec a
+    ldh [hSpriteSize], a
+
+    ; check if N is zero and jump back if not
+    cp $00
+    jr nz, .forNLoop
+
+    jp MainLoop

@@ -31,3 +31,7 @@ SECTION "Chip8 Transfer State", HRAM
 ; The number of HBlank transfer ticks done.
 hTransferTicksDone::
     ds $0001
+
+; The size of sprite we are drawing
+hSpriteSize::
+    ds $0001
