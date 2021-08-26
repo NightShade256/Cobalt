@@ -26,4 +26,18 @@ Main:
     ; turn off the PPU
     call TurnPpuOff
 
+    ; Copy font to Chip-8 main memory
+    ld bc, Chip8FontEnd - Chip8FontStart
+    ld de, Chip8FontStart
+    ld hl, wChip8RAM
+
+    call MemCpy
+
+    ; Copy ROM to Chip-8 main memory
+    ld bc, Chip8RomEnd - Chip8RomStart
+    ld de, Chip8RomStart
+    ld hl, wChip8RAM + $0200
+
+    call MemCpy
+
     jr @
