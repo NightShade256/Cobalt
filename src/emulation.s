@@ -7,7 +7,7 @@ MainLoop::
     ; 0x80 = transfer complete
     ldh a, [hTransferTicksDone]
     cp $80
-    jr z, .skipTransfer
+    jr nc, .skipTransfer
 
     ; load DE with the source ptr
     sla a
@@ -40,6 +40,20 @@ MainLoop::
 
 ; All instruction handlers assume that BC contains the instruction
 SECTION "Chip8 Instructions", ROM0
+
+;;; CLS
+ChipOp_00E0:
+    ; Zero-fill the shadow VRAM
+    ld bc, wChip8VRAMEnd - wChip8VRAM
+    ld hl, wChip8VRAM
+
+    call MemZero
+
+    ; Set HBlank Transfer flag
+    xor a
+    ldh [hTransferTicksDone], a
+
+    jp MainLoop
 
 ;;; PC = NNN
 ChipOp_1NNN:        

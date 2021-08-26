@@ -9,6 +9,7 @@ SECTION "Chip8 VRAM", WRAM0, ALIGN[8]
 ; 512 Bs of Chip8 VRAM, enough to hold 8 x 4 tiles
 wChip8VRAM::
     ds $0100
+wChip8VRAMEnd::
 
 SECTION "Chip8 Registers", WRAM0
 
