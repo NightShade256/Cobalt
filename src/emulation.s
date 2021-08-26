@@ -36,7 +36,41 @@ MainLoop::
     call MemCpyTwoBytes
 
 .skipTransfer:
-    jr MainLoop
+    ld hl, wChip8ProgramCounter
+    ld a, [hl+]
+    ld b, a
+    ld a, [hl+]
+    ld c, a
+
+    ld h, b
+    ld l, c
+    ld a, [hl+]
+    ld b, a
+    ld a, [hl+]
+    ld c, a
+
+    ld a, h
+    ld [wChip8ProgramCounter + 0], a
+    ld a, l
+    ld [wChip8ProgramCounter + 1], a
+
+    ld a, b
+    and $F0
+
+    cp $00
+    jp z, ChipOp_00E0
+    cp $10
+    jp z, ChipOp_1NNN
+    cp $60
+    jp z, ChipOp_6XNN
+    cp $70
+    jp z, ChipOp_7XNN
+    cp $A0
+    jp z, ChipOp_ANNN
+    cp $D0
+    jp z, ChipOp_DXYN
+
+    jp MainLoop
 
 ; All instruction handlers assume that BC contains the instruction
 SECTION "Chip8 Instructions", ROM0
@@ -216,5 +250,8 @@ ChipOp_DXYN:
     ; check if N is zero and jump back if not
     cp $00
     jr nz, .forNLoop
+
+    xor a
+    ldh [hTransferTicksDone], a
 
     jp MainLoop

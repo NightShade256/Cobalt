@@ -40,4 +40,50 @@ Main:
 
     call MemCpy
 
-    jr @
+    ld bc, wChip8VRAMEnd - wChip8VRAM
+    ld hl, wChip8VRAM
+
+    call MemZero
+
+    ld bc, $A000 - $8000
+    ld hl, $8000
+
+    call MemZero
+
+    ld bc, TileMapEnd - TileMapStart
+    ld de, TileMapStart
+    ld hl, _SCRN0
+
+    call MemCpy
+
+    ld a, HIGH(wChip8RAM) + $02
+    ld [wChip8ProgramCounter + 0], a
+    xor a
+    ld [wChip8ProgramCounter + 1], a
+
+    ld a, %11110011
+    ldh [rBGP], a
+
+    ld a, IEF_STAT
+    ldh [rIE], a
+
+    ld a, STATF_MODE00
+    ldh [rSTAT], a
+
+    ld a, LCDCF_ON | LCDCF_BG8000 | LCDCF_BG9800 | LCDCF_BGON |LCDCF_OBJOFF
+    ldh [rLCDC], a
+
+    jp MainLoop
+
+SECTION "TILE MAP", ROM0
+
+TileMapStart:
+    db $00, $01, $02, $03, $04, $05, $06, $07, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+    db $08, $09, $0A, $0B, $0C, $0D, $0E, $0F, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+    db $10, $11, $12, $13, $14, $15, $16, $17, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+    db $18, $19, $1A, $1B, $1C, $1D, $1E, $1F, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+    db $00, $00, $00, $00, $00, $00, $00, $00, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+    db $00, $00, $00, $00, $00, $00, $00, $00, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+    db $00, $00, $00, $00, $00, $00, $00, $00, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+    db $00, $00, $00, $00, $00, $00, $00, $00, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TileMapEnd:
