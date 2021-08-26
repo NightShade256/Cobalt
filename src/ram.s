@@ -8,7 +8,7 @@ SECTION "Chip8 VRAM", WRAM0, ALIGN[8]
 
 ; 512 Bs of Chip8 VRAM, enough to hold 8 x 4 tiles
 wChip8VRAM::
-    ds $0200
+    ds $0100
 
 SECTION "Chip8 Registers", WRAM0
 
@@ -22,5 +22,11 @@ wChip8ProgramCounter::
     ds $0002
 
 ; 16 bit Index Register
-wChip8IndexReg:
+wChip8IndexReg::
     ds $0002
+
+SECTION "Chip8 Transfer State", HRAM
+
+; The number of HBlank transfer ticks done.
+hTransferTicksDone::
+    ds $0001

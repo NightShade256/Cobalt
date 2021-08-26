@@ -31,3 +31,15 @@ MemZero::
     or c
     jr nz, MemZero
     ret
+
+;;; Copy exactly 2 bytes of memory from DE to HL but skipping every other
+;;; HL byte.
+MemCpyTwoBytes:
+    REPT 2
+        ld a, [de]
+        inc de
+        ld [hl+], a
+        inc hl
+    ENDR
+    
+    ret

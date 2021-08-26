@@ -9,6 +9,5 @@ SRAMSIZE := 0x00
 ROMNAME := Cobalt
 ROMEXT  := gb
 
-ASFLAGS += -h
 LDFLAGS += -t -d
 PADVALUE := 0xFF
