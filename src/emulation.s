@@ -7,7 +7,7 @@ MainLoop::
     ; 0x80 = transfer complete
     ldh a, [hTransferTicksDone]
     cp $80
-    jr z, skipTransfer
+    jr z, .skipTransfer
 
     ; load DE with the source ptr
     sla a

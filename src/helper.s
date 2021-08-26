@@ -1,3 +1,5 @@
+INCLUDE "include/hardware.inc/hardware.inc"
+
 SECTION "Helpers", ROM0
 
 ;;; Copy memory the size of BC from DE to HL.
@@ -34,7 +36,7 @@ MemZero::
 
 ;;; Copy exactly 2 bytes of memory from DE to HL but skipping every other
 ;;; HL byte.
-MemCpyTwoBytes:
+MemCpyTwoBytes::
     REPT 2
         ld a, [de]
         inc de
@@ -42,4 +44,23 @@ MemCpyTwoBytes:
         inc hl
     ENDR
     
+    ret
+
+;;; Turn the PPU off. Waits for VBlank before disabling LCDC.
+;;; If the PPU is already off returns.
+TurnPpuOff::
+    ; check if LCDC bit 7 is already zero and return
+    ldh a, [rLCDC]
+    and LCDCF_ON
+    ret z
+
+.waitForVBlank
+    ldh a, [rLY]
+    cp $90
+    jr c, .waitForVBlank
+
+    ; disable the PPU since we are in VBlank
+    ld a, $00
+    ldh [rLCDC], a
+
     ret

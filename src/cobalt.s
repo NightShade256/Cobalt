@@ -1,3 +1,5 @@
+INCLUDE "include/hardware.inc/hardware.inc"
+
 SECTION "Header", ROM0[$0100]
 
 Init:
@@ -11,4 +13,17 @@ Init:
 SECTION "Main", ROM0
 
 Main:
-    jr @
+    ; disable all interrupts for now
+    di
+
+    ; setup stack pointer to end of WRAM bank 1
+    ld sp, $E000
+
+    ; turn off the audio system
+    ld a, AUDENA_OFF
+    ldh [rNR52], a
+
+    ; turn off the PPU
+    call TurnPpuOff
+
+    
