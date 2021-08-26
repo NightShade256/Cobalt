@@ -57,7 +57,40 @@ ChipOp_1NNN:
     ld a, c
     ld [wChip8ProgramCounter + 1], a
 
-    ret
+    jp MainLoop
+
+;;; V[X] = NN
+ChipOp_6XNN:
+    ; discard top four bits of B, leaving the 0N part in A
+    ld a, b
+    and $0F
+
+    ; construct ptr to the location
+    ld h, HIGH(wChip8GPR)
+    ld l, a
+
+    ; load the value in (HL)
+    ld [hl], c
+
+    jp MainLoop
+
+;;; V[X] += NN
+ChipOp_7XNN:
+    ; discard top four bits of B, leaving the 0N part in A
+    ld a, b
+    and $0F
+
+    ; construct ptr to the location
+    ld h, HIGH(wChip8GPR)
+    ld l, a
+
+    ; load the (HL) value in A, add NN to it and put it back
+    ; we don't care about overflow here at all
+    ld a, [hl]
+    add c
+    ld [hl], a
+
+    jp MainLoop
 
 ;;; I = NN
 ChipOp_ANNN:
@@ -75,4 +108,4 @@ ChipOp_ANNN:
     ld a, c
     ld [wChip8IndexReg + 1], a
 
-    ret
+    jp MainLoop
