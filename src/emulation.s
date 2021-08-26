@@ -140,7 +140,7 @@ ChipOp_7XNN:
 
     jp MainLoop
 
-;;; I = NN
+;;; I = NNN
 ChipOp_ANNN:
     ; discard top four bits of B, leaving the 0N part in A
     ld a, b
@@ -158,7 +158,7 @@ ChipOp_ANNN:
 
     jp MainLoop
 
-;;;; DXYN
+;;; DXYN
 ChipOp_DXYN:
     ; Extract N into its register
     ld a, c
