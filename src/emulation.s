@@ -37,3 +37,42 @@ MainLoop::
 
 .skipTransfer:
     jr MainLoop
+
+; All instruction handlers assume that BC contains the instruction
+SECTION "Chip8 Instructions", ROM0
+
+;;; PC = NNN
+ChipOp_1NNN:        
+    ; discard top four bits of B, leaving the 0N part in A
+    ld a, b
+    and $0F
+    add HIGH(wChip8RAM)
+
+    ; load the top byte in PC
+    ld [wChip8ProgramCounter + 0], a
+
+    ; load the bottom byte in PC
+    ; since Chip8 RAM is aligned we don't need to touch the bottom
+    ; byte at all
+    ld a, c
+    ld [wChip8ProgramCounter + 1], a
+
+    ret
+
+;;; I = NN
+ChipOp_ANNN:
+    ; discard top four bits of B, leaving the 0N part in A
+    ld a, b
+    and $0F
+    add HIGH(wChip8RAM)
+
+    ; load the top byte in ID
+    ld [wChip8IndexReg + 0], a
+
+    ; load the bottom byte in ID
+    ; since Chip8 RAM is aligned we don't need to touch the bottom
+    ; byte at all
+    ld a, c
+    ld [wChip8IndexReg + 1], a
+
+    ret
