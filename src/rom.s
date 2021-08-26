@@ -1,3 +1,9 @@
+SECTION "Chip8 ROM", ROM0
+
+Chip8RomStart::
+    INCBIN "roms/IBM_Logo.ch8"
+Chip8RomEnd::
+
 SECTION "Chip8 Font", ROM0
 
 Chip8FontStart::

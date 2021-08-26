@@ -26,4 +26,4 @@ Main:
     ; turn off the PPU
     call TurnPpuOff
 
-    
+    jr @
