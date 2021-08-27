@@ -165,12 +165,13 @@ ChipOp_ANNN:
 ; starting at the address stored in `I`.
 ; Set `VF` to `01` if any set pixels are changed to unset, and `00` otherwise.
 ChipOp_DXYN:
-    ; Extract N into its register
+    ; Extract N into the sprite size register
     ld a, c
     and $0F
     ldh [hSpriteSize], a
 
-    ; Extract X into B
+    ; Extract X coordinate into the B register and perform
+    ; X mod 64
     ld a, b
     and $0F
     ld h, HIGH(wChip8GPR)
@@ -179,7 +180,8 @@ ChipOp_DXYN:
     and $3F
     ld b, a
 
-    ; Extract Y into C
+    ; Extract Y coordinate into the C register and perform
+    ; Y mod 32
     ld a, c
     and $F0
     swap a
@@ -199,40 +201,48 @@ ChipOp_DXYN:
     ld l, a
 
 .forNLoop:
-    ; preserve X and Y coordinates
+    ; Preserve the X and Y coordinates
     push bc
 
-    ; load the sprite data into D
+    ; Load the sprite data into D register
     ld a, [hl+]
     ld d, a
 
+    ; Preserve the sprite pointer
     push hl
 
-    ; compute the tile index where we are rendering
+    ; Compute the index of the tile where the coordinates lie
+    ; Formula: Tile Index = (X / 8) + (Y & !(7))
     ld a, b
-    srl a
-    srl a
-    srl a
+
+    REPT 3
+        srl a
+    ENDR
+
     ld e, c
-    srl c
-    srl c
-    srl c
-    sla c
-    sla c
-    sla c
+
+    REPT 3
+        srl c
+    ENDR
+
+    REPT 3
+        sla c
+    ENDR
+
     add c
     ld c, e
 
-    ; compute address of the tile we are rendering
-    sla a
-    sla a
-    sla a
+    ; Compute the address of the tile
+    REPT 3
+        sla a
+    ENDR
+    
     ld l, a
     ld a, $00
     adc HIGH(wChip8VRAM)
     ld h, a
 
-    ; add Y offset
+    ; Add the Y offset to the address
     ld a, c
     and $07
     add l
@@ -241,22 +251,29 @@ ChipOp_DXYN:
     adc $00
     ld h, a
 
+    ; Check if the X coordinate is aligned to 8 pixel boundary
+    ; if no, render the case specially
     ld a, b
-
     and $07
     jr z, .noNextTile
     ld c, $00
 
 .yesNextTile:
+    ; Shift sprite data to the right by (X mod 8) and put the
+    ; bytes that are shifted back into the C register
     srl d
     rr c
     dec a
     jr nz, .yesNextTile
 
+    ; Load the byte from VRAM, XOR sprite data and then put it back
     ld a, [hl]
     xor d
     ld [hl], a
 
+    ; The rest of the data is to be XORed to the same row but of the *next* tile
+    ; Each tile is 8 bytes long, so we can just add 8 to the current tile address
+    ; and get the next tile address
     ld a, l
     add $08
     ld l, a
@@ -264,33 +281,42 @@ ChipOp_DXYN:
     adc h
     ld h, a
 
+    ; Load the byte from VRAM, XOR sprite data and then put it back
     ld a, [hl]
     xor c
     ld [hl], a
+
+    ; Do not execute the non-special case and jump to the loop
+    ; condition check directly
     jr .isDone
 
 .noNextTile:
+    ; Just load the VRAM byte into A, XOR sprite data and then put the
+    ; result back in
     ld a, [hl]
     xor d
     ld [hl], a
 
 .isDone:
+    ; Restore the sprite data pointer
     pop hl
 
-    ; restore X and Y coordinates
+    ; Restore the original X and Y coordinate
     pop bc
 
+    ; Increment the Y coordinate in sync with the for N loop
     inc c
 
-    ; decrement N
+    ; Decrement N
     ldh a, [hSpriteSize]
     dec a
     ldh [hSpriteSize], a
 
-    ; check if N is zero and jump back if not
+    ; Check if N is zero and jump back if not
     cp $00
     jr nz, .forNLoop
 
+    ; Set HBlank transfer flag
     xor a
     ldh [hTransferTicksDone], a
 
