@@ -73,6 +73,7 @@ Main:
     ld a, LCDCF_ON | LCDCF_BG8000 | LCDCF_BG9800 | LCDCF_BGON |LCDCF_OBJOFF
     ldh [rLCDC], a
 
+    ei
     jp MainLoop
 
 SECTION "TILE MAP", ROM0
