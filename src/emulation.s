@@ -195,9 +195,6 @@ ChipOp_DXYN:
     ld l, a
 
 .forNLoop:
-    ; Compute Y effective, essentially it is Y coordinate + N
-    inc c
-
     ; preserve X and Y coordinates
     push bc
 
@@ -212,7 +209,15 @@ ChipOp_DXYN:
     srl a
     srl a
     srl a
+    ld e, c
+    srl c
+    srl c
+    srl c
+    sla c
+    sla c
+    sla c
     add c
+    ld c, e
 
     ; compute address of the tile we are rendering
     sla a
@@ -226,7 +231,6 @@ ChipOp_DXYN:
     ; add Y offset
     ld a, c
     and $07
-    sla a
     add l
     ld l, a
     ld a, h
@@ -241,6 +245,8 @@ ChipOp_DXYN:
 
     ; restore X and Y coordinates
     pop bc
+
+    inc c
 
     ; decrement N
     ldh a, [hSpriteSize]
