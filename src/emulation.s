@@ -72,10 +72,9 @@ MainLoop::
 
     jp MainLoop
 
-; All instruction handlers assume that BC contains the instruction
 SECTION "Chip8 Instructions", ROM0
 
-;;; CLS
+; $00E0 - Clear the screen.
 ChipOp_00E0:
     ; Zero-fill the shadow VRAM
     ld bc, wChip8VRAMEnd - wChip8VRAM
@@ -89,7 +88,7 @@ ChipOp_00E0:
 
     jp MainLoop
 
-;;; PC = NNN
+; $1NNN - Jump to address `NNN`.
 ChipOp_1NNN:        
     ; discard top four bits of B, leaving the 0N part in A
     ld a, b
@@ -107,7 +106,7 @@ ChipOp_1NNN:
 
     jp MainLoop
 
-;;; V[X] = NN
+; $6XNN - Store number `NN` in register `VX`.
 ChipOp_6XNN:
     ; discard top four bits of B, leaving the 0N part in A
     ld a, b
@@ -122,7 +121,7 @@ ChipOp_6XNN:
 
     jp MainLoop
 
-;;; V[X] += NN
+; $7XNN - Add the value `NN` to register `VX`.
 ChipOp_7XNN:
     ; discard top four bits of B, leaving the 0N part in A
     ld a, b
@@ -140,7 +139,7 @@ ChipOp_7XNN:
 
     jp MainLoop
 
-;;; I = NNN
+; $ANNN - Store memory address `NNN` in register `I`.
 ChipOp_ANNN:
     ; discard top four bits of B, leaving the 0N part in A
     ld a, b
@@ -158,7 +157,8 @@ ChipOp_ANNN:
 
     jp MainLoop
 
-;;; DXYN
+; $ DXYN - Draw a sprite at position `VX`, `VY` with `N` bytes of sprite data starting at the address stored in `I`.
+; Set `VF` to `01` if any set pixels are changed to unset, and `00` otherwise.
 ChipOp_DXYN:
     ; Extract N into its register
     ld a, c
@@ -231,7 +231,6 @@ ChipOp_DXYN:
     ld a, h
     adc $00
     ld h, a
-
 
     ld a, [hl]
     xor d
