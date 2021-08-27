@@ -99,11 +99,11 @@ ChipOp_1NNN:
     and $0F
     add HIGH(wChip8RAM)
 
-    ; load the top byte in PC
+    ; Load the top byte in PC
     ld [wChip8ProgramCounter + 0], a
 
-    ; load the bottom byte in PC
-    ; since Chip8 RAM is aligned we don't need to touch the bottom
+    ; Load the bottom byte in PC
+    ; Since Chip8 RAM is aligned we don't need to touch the bottom
     ; byte at all
     ld a, c
     ld [wChip8ProgramCounter + 1], a
