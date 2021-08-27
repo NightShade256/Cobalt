@@ -2,6 +2,8 @@
 
 A work-in-progress Chip-8 interpreter written for the Game Boy.
 
+<img src="./README/IBM Logo.png" width="300" /> &nbsp;
+
 ## Build Instructions
 
 Cobalt requires the `RGBDS` toolchain and `GNU Make` to be present.
