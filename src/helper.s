@@ -2,7 +2,7 @@ INCLUDE "include/hardware.inc/hardware.inc"
 
 SECTION "Helpers", ROM0
 
-;;; Copy memory the size of BC from DE to HL.
+; Copy memory the size of BC from DE to HL.
 MemCpy::
     ld a, [de]
     inc de
@@ -13,7 +13,7 @@ MemCpy::
     jr nz, MemCpy
     ret
 
-;;; Set memory the size of BC to the value E, at the location HL.
+; Set memory the size of BC to the value E, at the location HL.
 MemSet::
     ld a, e
     ld [hl+], a
@@ -23,8 +23,8 @@ MemSet::
     jr nz, MemSet
     ret
 
-;;; Set memory the size of BC to the value 0, at the location HL.
-;;; Same as MemSet but doesn't require the use of register E.
+; Set memory the size of BC to the value 0, at the location HL.
+; Same as MemSet but doesn't require the use of register E.
 MemZero::
     xor a
     ld [hl+], a
@@ -34,8 +34,8 @@ MemZero::
     jr nz, MemZero
     ret
 
-;;; Copy exactly 2 bytes of memory from DE to HL but skipping every other
-;;; HL byte.
+; Copy exactly 2 bytes of memory from DE to HL but skipping every other
+; HL byte.
 MemCpyTwoBytes::
     REPT 2
         ld a, [de]
@@ -46,10 +46,9 @@ MemCpyTwoBytes::
     
     ret
 
-;;; Turn the PPU off. Waits for VBlank before disabling LCDC.
-;;; If the PPU is already off returns.
+; Turn the PPU off. Waits for VBlank before disabling LCDC.
+; If the PPU is already off returns.
 TurnPpuOff::
-    ; check if LCDC bit 7 is already zero and return
     ldh a, [rLCDC]
     and LCDCF_ON
     ret z
@@ -59,8 +58,6 @@ TurnPpuOff::
     cp $90
     jr c, .waitForVBlank
 
-    ; disable the PPU since we are in VBlank
     ld a, $00
     ldh [rLCDC], a
-
     ret

@@ -1,6 +1,6 @@
 INCLUDE "include/hardware.inc/hardware.inc"
 
-SECTION "Chip8 Interpreter", ROM0
+SECTION "Chip8 Main Loop", ROM0
 
 MainLoop::
     ; check number of transfer ticks done

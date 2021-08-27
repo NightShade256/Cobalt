@@ -25,7 +25,7 @@ Chip8FontStart::
     db $F0, $80, $F0, $80, $80, ; F
 Chip8FontEnd::
 
-SECTION "TILE MAP", ROM0
+SECTION "Tile Map", ROM0
 
 TileMapStart::
     db $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,
