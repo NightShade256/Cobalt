@@ -237,10 +237,40 @@ ChipOp_DXYN:
     adc $00
     ld h, a
 
+    ld a, b
+
+    and $07
+    jr z, .noNextTile
+    ld c, $00
+
+.yesNextTile:
+    srl d
+    rr c
+    dec a
+    jr nz, .yesNextTile
+
     ld a, [hl]
     xor d
     ld [hl], a
 
+    ld a, l
+    add $08
+    ld l, a
+    ld a, $00
+    adc h
+    ld h, a
+
+    ld a, [hl]
+    xor c
+    ld [hl], a
+    jr .isDone
+
+.noNextTile:
+    ld a, [hl]
+    xor d
+    ld [hl], a
+
+.isDone:
     pop hl
 
     ; restore X and Y coordinates
