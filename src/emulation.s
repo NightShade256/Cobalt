@@ -3,39 +3,40 @@ INCLUDE "include/hardware.inc/hardware.inc"
 SECTION "Chip8 Main Loop", ROM0
 
 MainLoop::
-    ; check number of transfer ticks done
-    ; 0x80 = transfer complete
+    ; Check number of transfer ticks done
+    ; A value of 0x80 means that the transfer is complete
     ldh a, [hTransferTicksDone]
     cp $80
     jr nc, .skipTransfer
 
-    ; load DE with the source ptr
+    ; Load DE with the source pointer in Chip-8 VRAM
     sla a
     ld d, HIGH(wChip8VRAM)
     ld e, a
 
-    ; load HL with the destination ptr
+    ; Load HL with the destination pointer in GB VRAM
     sla a
     ld l, a
     ld a, $00
     adc HIGH(_VRAM8000)
     ld h, a
 
-    ; pre-increment transfer ticks
+    ; Pre-increment transfer ticks
     ldh a, [hTransferTicksDone]
     inc a
     ldh [hTransferTicksDone], a
 
-    ; wait till hblank is hit
+    ; Wait for HBlank
     halt
 
-    ; transfer 2 bytes of data
-    ; will take roughly around 16 M-cycles
-    ; we have 51 M-cycles at our hand, excluding additional
+    ; Transfer 2 bytes of data
+    ; This will take roughly around 16 M-cycles
+    ; We have 51 M-cycles at our hand, excluding additional
     ; 20 M-cycles of OAM search period
     call MemCpyTwoBytes
 
 .skipTransfer:
+    ; Load BC with the Chip-8 instruction
     ld hl, wChip8ProgramCounter
     ld a, [hl+]
     ld b, a
@@ -49,11 +50,13 @@ MainLoop::
     ld a, [hl+]
     ld c, a
 
+    ; Pre-increment the Chip-8 PC
     ld a, h
     ld [wChip8ProgramCounter + 0], a
     ld a, l
     ld [wChip8ProgramCounter + 1], a
 
+    ; Jump to the appropriate instruction handler
     ld a, b
     and $F0
 
@@ -90,7 +93,8 @@ ChipOp_00E0:
 
 ; $1NNN - Jump to address `NNN`.
 ChipOp_1NNN:        
-    ; discard top four bits of B, leaving the 0N part in A
+    ; Discard top four bits of B, leaving the 0N part in A
+    ; and then add the Chip-8 RAM address offset
     ld a, b
     and $0F
     add HIGH(wChip8RAM)
@@ -108,31 +112,31 @@ ChipOp_1NNN:
 
 ; $6XNN - Store number `NN` in register `VX`.
 ChipOp_6XNN:
-    ; discard top four bits of B, leaving the 0N part in A
+    ; Discard top four bits of B, leaving the 0N part in A
     ld a, b
     and $0F
 
-    ; construct ptr to the location
+    ; Construct pointer to the register location
     ld h, HIGH(wChip8GPR)
     ld l, a
 
-    ; load the value in (HL)
+    ; Load the value in the register
     ld [hl], c
 
     jp MainLoop
 
 ; $7XNN - Add the value `NN` to register `VX`.
 ChipOp_7XNN:
-    ; discard top four bits of B, leaving the 0N part in A
+    ; Discard top four bits of B, leaving the 0N part in A
     ld a, b
     and $0F
 
-    ; construct ptr to the location
+    ; Construct pointer to the register location
     ld h, HIGH(wChip8GPR)
     ld l, a
 
-    ; load the (HL) value in A, add NN to it and put it back
-    ; we don't care about overflow here at all
+    ; Load the value in A, add NN to it and put it back
+    ; We don't care about overflow here at all
     ld a, [hl]
     add c
     ld [hl], a
@@ -141,16 +145,16 @@ ChipOp_7XNN:
 
 ; $ANNN - Store memory address `NNN` in register `I`.
 ChipOp_ANNN:
-    ; discard top four bits of B, leaving the 0N part in A
+    ; Discard top four bits of B, leaving the 0N part in A
     ld a, b
     and $0F
     add HIGH(wChip8RAM)
 
-    ; load the top byte in ID
+    ; Load the top byte in ID
     ld [wChip8IndexReg + 0], a
 
-    ; load the bottom byte in ID
-    ; since Chip8 RAM is aligned we don't need to touch the bottom
+    ; Load the bottom byte in ID
+    ; Since Chip8 RAM is aligned we don't need to touch the bottom
     ; byte at all
     ld a, c
     ld [wChip8IndexReg + 1], a
