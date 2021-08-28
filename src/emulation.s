@@ -166,7 +166,7 @@ ChipOp_3XNN:
 
     ; Skip the next instruction if A == C
     cp c
-    jr nz, .dontSkipInstruction
+    jr nz, .dontSkipInstruction_3X
 
     ; Load PC into HL
     ld a, [wChip8ProgramCounter + 0]
@@ -184,7 +184,43 @@ ChipOp_3XNN:
     ld a, l
     ld [wChip8ProgramCounter + 1], a
 
-.dontSkipInstruction
+.dontSkipInstruction_3X
+    jp MainLoop
+
+; $4XNN - Skip the following instruction if the value of register `VX` is not equal to `NN`.
+ChipOp_4XNN:
+    ; Discard top four bits of B, leaving the 0N part in A
+    ld a, b
+    and $0F
+
+    ; Construct pointer to the register location
+    ld h, HIGH(wChip8GPR)
+    ld l, a
+
+    ; Load the value of the register in A
+    ld a, [hl]
+
+    ; Skip the next instruction if A != C
+    cp c
+    jr z, .dontSkipInstruction_4X
+
+    ; Load PC into HL
+    ld a, [wChip8ProgramCounter + 0]
+    ld h, a
+    ld a, [wChip8ProgramCounter + 1]
+    ld l, a
+
+    ; Add two to HL
+    ld de, $0002
+    add hl, de
+
+    ; Write-back HL into PC
+    ld a, h
+    ld [wChip8ProgramCounter + 0], a
+    ld a, l
+    ld [wChip8ProgramCounter + 1], a
+
+.dontSkipInstruction_4X
     jp MainLoop
 
 ; $6XNN - Store number `NN` in register `VX`.
