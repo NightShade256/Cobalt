@@ -14,7 +14,7 @@ wChip8VRAMEnd::
 SECTION "Chip8 Registers", WRAM0
 
 ; 16 General Purpose Registers
-ALIGN 8
+ALIGN 4
 wChip8GPR::
     ds $0010
 

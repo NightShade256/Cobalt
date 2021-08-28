@@ -57,25 +57,66 @@ MainLoop::
     ld [wChip8ProgramCounter + 1], a
 
     ; Jump to the appropriate instruction handler
+    ld hl, MainJumpTable
+    
+    ; Multiply top nibble by two, add to `L`
     ld a, b
     and $F0
+    swap a
+    sla a
+    add l
+    ld l, a
+
+    ; Read the address of the handler
+    ld a, [hl+]
+    ld d, a
+    ld a, [hl+]
+    ld e, a
+    
+    ; Little Endian - so reverse the order
+    ld h, e
+    ld l, d
+
+    ; Jump to the handler
+    jp hl
+
+SECTION "Chip8 Instruction Jump Table", ROM0
+
+ALIGN 4
+MainJumpTable:
+    dw ChipOp_0Top
+    dw ChipOp_1NNN
+    dw ChipOp_Undefined
+    dw ChipOp_Undefined
+    dw ChipOp_Undefined
+    dw ChipOp_Undefined
+    dw ChipOp_6XNN
+    dw ChipOp_7XNN
+    dw ChipOp_Undefined
+    dw ChipOp_Undefined
+    dw ChipOp_ANNN
+    dw ChipOp_Undefined
+    dw ChipOp_Undefined
+    dw ChipOp_DXYN
+    dw ChipOp_Undefined
+    dw ChipOp_Undefined
+
+SECTION "Chip8 Instructions", ROM0
+
+; $XXXX - Undefined Instruction
+ChipOp_Undefined:
+    jp MainLoop
+
+ChipOp_0Top:
+    ld a, c
+    and $0F
 
     cp $00
     jp z, ChipOp_00E0
-    cp $10
-    jp z, ChipOp_1NNN
-    cp $60
-    jp z, ChipOp_6XNN
-    cp $70
-    jp z, ChipOp_7XNN
-    cp $A0
-    jp z, ChipOp_ANNN
-    cp $D0
-    jp z, ChipOp_DXYN
+    cp $0E
+    jp z, ChipOp_Undefined
 
     jp MainLoop
-
-SECTION "Chip8 Instructions", ROM0
 
 ; $00E0 - Clear the screen.
 ChipOp_00E0:
