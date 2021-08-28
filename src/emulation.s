@@ -88,7 +88,7 @@ MainJumpTable:
     dw ChipOp_1NNN
     dw ChipOp_Undefined
     dw ChipOp_3XNN
-    dw ChipOp_Undefined
+    dw ChipOp_4XNN
     dw ChipOp_Undefined
     dw ChipOp_6XNN
     dw ChipOp_7XNN
@@ -222,6 +222,8 @@ ChipOp_4XNN:
 
 .dontSkipInstruction_4X
     jp MainLoop
+
+; $5XY0 - Skip the following instruction if the value of register `VX` is equal to the value of register `VY`.
 
 ; $6XNN - Store number `NN` in register `VX`.
 ChipOp_6XNN:
