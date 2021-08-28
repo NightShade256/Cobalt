@@ -89,7 +89,7 @@ MainJumpTable:
     dw ChipOp_Undefined
     dw ChipOp_3XNN
     dw ChipOp_4XNN
-    dw ChipOp_Undefined
+    dw ChipOp_5XY0
     dw ChipOp_6XNN
     dw ChipOp_7XNN
     dw ChipOp_Undefined
@@ -224,6 +224,49 @@ ChipOp_4XNN:
     jp MainLoop
 
 ; $5XY0 - Skip the following instruction if the value of register `VX` is equal to the value of register `VY`.
+ChipOp_5XY0:
+    ; Discard top four bits of B, leaving the 0N part in A
+    ld a, b
+    and $0F
+
+    ; Construct pointer to the register location X
+    ld h, HIGH(wChip8GPR)
+    ld l, a
+
+    ; Load the value of the register in B
+    ld b, [hl]
+
+    ; Construct pointer to the register location Y
+    ld a, c
+    and $F0
+    swap a
+    ld l, a
+
+    ; Load the value of the register in A
+    ld a, [hl]
+
+    ; Skip the next instruction if A == B
+    cp b
+    jr nz, .dontSkipInstruction_5X
+
+    ; Load PC into HL
+    ld a, [wChip8ProgramCounter + 0]
+    ld h, a
+    ld a, [wChip8ProgramCounter + 1]
+    ld l, a
+
+    ; Add two to HL
+    ld de, $0002
+    add hl, de
+
+    ; Write-back HL into PC
+    ld a, h
+    ld [wChip8ProgramCounter + 0], a
+    ld a, l
+    ld [wChip8ProgramCounter + 1], a
+
+.dontSkipInstruction_5X
+    jp MainLoop
 
 ; $6XNN - Store number `NN` in register `VX`.
 ChipOp_6XNN:
