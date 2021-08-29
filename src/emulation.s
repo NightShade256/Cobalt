@@ -93,7 +93,7 @@ MainJumpTable:
     dw ChipOp_6XNN
     dw ChipOp_7XNN
     dw ChipOp_8Top
-    dw ChipOp_Undefined
+    dw ChipOp_9XY0
     dw ChipOp_ANNN
     dw ChipOp_Undefined
     dw ChipOp_Undefined
