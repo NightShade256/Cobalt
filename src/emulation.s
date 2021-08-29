@@ -110,7 +110,7 @@ ArithmeticJumpTable:
     dw ChipOp_8XY4
     dw ChipOp_8XY5
     dw ChipOp_Undefined
-    dw ChipOp_Undefined
+    dw ChipOp_8XY7
     dw ChipOp_Undefined
     dw ChipOp_Undefined
     dw ChipOp_Undefined
@@ -532,6 +532,45 @@ ChipOp_8XY5:
     ld [hl], $01
 
 .yesCarry_Y5
+    jp MainLoop
+
+; $8XY7 - Set register VX to the value of `VY` minus `VX`.
+; Set `VF` to 00 if a borrow occurs
+; Set `VF` to 01 if a borrow does not occur
+ChipOp_8XY7:
+    ; Discard bottom four bits of C, leaving the Y0 part in A
+    ld a, c
+    and $F0
+    swap a
+
+    ; Construct pointer to the register location Y
+    ld h, HIGH(wChip8GPR)
+    ld l, a
+
+    ; Load the value of the register in C
+    ld c, [hl]
+
+    ; Construct pointer to the register location X
+    ld a, b
+    and $0F
+    ld l, a
+
+    ; Load the value of the register in A
+    ld b, [hl]
+
+    ; Subtract the values
+    ld a, c
+    sub b
+
+    ; Store X back into memory
+    ld [hl], a
+
+    ; If carry does not occur set VF to 1
+    jr c, .yesCarry_Y7
+    ld l, $0F
+    ld [hl], $01
+
+.yesCarry_Y7
     jp MainLoop
 
 ; $ANNN - Store memory address `NNN` in register `I`.
