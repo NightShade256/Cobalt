@@ -56,7 +56,7 @@ MainLoop::
     ld a, l
     ld [wChip8ProgramCounter + 1], a
 
-    ; Jump to the appropriate instruction handler
+    ; Load address of the main jump table into HL
     ld hl, MainJumpTable
     
     ; Multiply top nibble by two, add to `L`
@@ -92,12 +92,31 @@ MainJumpTable:
     dw ChipOp_5XY0
     dw ChipOp_6XNN
     dw ChipOp_7XNN
-    dw ChipOp_Undefined
+    dw ChipOp_8Top
     dw ChipOp_Undefined
     dw ChipOp_ANNN
     dw ChipOp_Undefined
     dw ChipOp_Undefined
     dw ChipOp_DXYN
+    dw ChipOp_Undefined
+    dw ChipOp_Undefined
+
+ALIGN 4
+ArithmeticJumpTable:
+    dw ChipOp_8XY0
+    dw ChipOp_Undefined
+    dw ChipOp_Undefined
+    dw ChipOp_Undefined
+    dw ChipOp_Undefined
+    dw ChipOp_Undefined
+    dw ChipOp_Undefined
+    dw ChipOp_Undefined
+    dw ChipOp_Undefined
+    dw ChipOp_Undefined
+    dw ChipOp_Undefined
+    dw ChipOp_Undefined
+    dw ChipOp_Undefined
+    dw ChipOp_Undefined
     dw ChipOp_Undefined
     dw ChipOp_Undefined
 
@@ -117,6 +136,30 @@ ChipOp_0Top:
     jp z, ChipOp_Undefined
 
     jp MainLoop
+
+ChipOp_8Top:
+    ; Load address of the arithmetic jump table into HL
+    ld hl, ArithmeticJumpTable
+    
+    ; Multiply top nibble by two, add to `L`
+    ld a, c
+    and $0F
+    sla a
+    add l
+    ld l, a
+
+    ; Read the address of the handler
+    ld a, [hl+]
+    ld d, a
+    ld a, [hl+]
+    ld e, a
+    
+    ; Little Endian - so reverse the order
+    ld h, e
+    ld l, d
+
+    ; Jump to the handler
+    jp hl
 
 ; $00E0 - Clear the screen.
 ChipOp_00E0:
@@ -225,7 +268,7 @@ ChipOp_4XNN:
 
 ; $5XY0 - Skip the following instruction if the value of register `VX` is equal to the value of register `VY`.
 ChipOp_5XY0:
-    ; Discard top four bits of B, leaving the 0N part in A
+    ; Discard top four bits of B, leaving the 0X part in A
     ld a, b
     and $0F
 
@@ -298,6 +341,30 @@ ChipOp_7XNN:
     ld a, [hl]
     add c
     ld [hl], a
+
+    jp MainLoop
+
+; $8XY0 - Store the value of register `VY` in register `VX`.
+ChipOp_8XY0:
+    ; Discard bottom four bits of C, leaving the Y0 part in A
+    ld a, c
+    and $F0
+    swap a
+
+    ; Construct pointer to the register location Y
+    ld h, HIGH(wChip8GPR)
+    ld l, a
+
+    ; Load the value of the register in C
+    ld c, [hl]
+
+    ; Construct pointer to the register location X
+    ld a, b
+    and $0F
+    ld l, a
+
+    ; Load the value C into [HL]
+    ld [hl], c
 
     jp MainLoop
 
