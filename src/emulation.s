@@ -218,8 +218,8 @@ ChipOp_3XNN:
     ld l, a
 
     ; Add two to HL
-    ld de, $0002
-    add hl, de
+    inc hl
+    inc hl
 
     ; Write-back HL into PC
     ld a, h
@@ -254,8 +254,8 @@ ChipOp_4XNN:
     ld l, a
 
     ; Add two to HL
-    ld de, $0002
-    add hl, de
+    inc hl
+    inc hl
 
     ; Write-back HL into PC
     ld a, h
@@ -299,8 +299,8 @@ ChipOp_5XY0:
     ld l, a
 
     ; Add two to HL
-    ld de, $0002
-    add hl, de
+    inc hl
+    inc hl
 
     ; Write-back HL into PC
     ld a, h
@@ -606,8 +606,8 @@ ChipOp_9XY0:
     ld l, a
 
     ; Add two to HL
-    ld de, $0002
-    add hl, de
+    inc hl
+    inc hl
 
     ; Write-back HL into PC
     ld a, h
