@@ -573,6 +573,50 @@ ChipOp_8XY7:
 .yesCarry_Y7
     jp MainLoop
 
+ChipOp_9XY0:
+    ; Discard top four bits of B, leaving the 0X part in A
+    ld a, b
+    and $0F
+
+    ; Construct pointer to the register location X
+    ld h, HIGH(wChip8GPR)
+    ld l, a
+
+    ; Load the value of the register in B
+    ld b, [hl]
+
+    ; Construct pointer to the register location Y
+    ld a, c
+    and $F0
+    swap a
+    ld l, a
+
+    ; Load the value of the register in A
+    ld a, [hl]
+
+    ; Skip the next instruction if A != B
+    cp b
+    jr z, .dontSkipInstruction_9X
+
+    ; Load PC into HL
+    ld a, [wChip8ProgramCounter + 0]
+    ld h, a
+    ld a, [wChip8ProgramCounter + 1]
+    ld l, a
+
+    ; Add two to HL
+    ld de, $0002
+    add hl, de
+
+    ; Write-back HL into PC
+    ld a, h
+    ld [wChip8ProgramCounter + 0], a
+    ld a, l
+    ld [wChip8ProgramCounter + 1], a
+
+.dontSkipInstruction_9X
+    jp MainLoop
+
 ; $ANNN - Store memory address `NNN` in register `I`.
 ChipOp_ANNN:
     ; Discard top four bits of B, leaving the 0N part in A
