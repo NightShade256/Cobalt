@@ -107,7 +107,7 @@ ArithmeticJumpTable:
     dw ChipOp_8XY1
     dw ChipOp_8XY2
     dw ChipOp_8XY3
-    dw ChipOp_Undefined
+    dw ChipOp_8XY4
     dw ChipOp_Undefined
     dw ChipOp_Undefined
     dw ChipOp_Undefined
@@ -456,6 +456,44 @@ ChipOp_8XY3:
     ; Store X back into memory
     ld [hl], a
 
+    jp MainLoop
+
+; $8XY4 - Add the value of register VY to register VX
+; Set VF to 01 if a carry occurs
+; Set VF to 00 if a carry does not occur
+ChipOp_8XY4:
+    ; Discard bottom four bits of C, leaving the Y0 part in A
+    ld a, c
+    and $F0
+    swap a
+
+    ; Construct pointer to the register location Y
+    ld h, HIGH(wChip8GPR)
+    ld l, a
+
+    ; Load the value of the register in C
+    ld c, [hl]
+
+    ; Construct pointer to the register location X
+    ld a, b
+    and $0F
+    ld l, a
+
+    ; Load the value of the register in A
+    ld a, [hl]
+
+    ; Add the values together
+    add c
+
+    ; Store X back into memory
+    ld [hl], a
+
+    ; If carry occurs set VF to 1
+    jr nc, .noCarry_Y4
+    ld l, $0F
+    ld [hl], $01
+
+.noCarry_Y4
     jp MainLoop
 
 ; $ANNN - Store memory address `NNN` in register `I`.
