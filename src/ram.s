@@ -17,6 +17,7 @@ SECTION "Chip8 Registers", WRAM0
 ALIGN 8
 wChip8GPR::
     ds $0010
+wChip8GPREnd::
 
 ; 16 bit Program Counter
 wChip8ProgramCounter::
@@ -46,4 +47,8 @@ hTransferTicksDone::
 
 ; The size of sprite we are drawing
 hSpriteSize::
+    ds $0001
+
+; The number of instructions executed within the current frame
+hInstructionsDone::
     ds $0001

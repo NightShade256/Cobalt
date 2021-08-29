@@ -52,6 +52,12 @@ Main:
 
     call MemZero
 
+    ; Zero initialize Chip-8 GPRs
+    ld bc, wChip8GPREnd - wChip8GPR
+    ld hl, wChip8GPR
+
+    call MemZero
+
     ; Zero initialize GB VRAM
     ld bc, $A000 - $8000
     ld hl, $8000
@@ -75,12 +81,16 @@ Main:
     ld a, $00
     ld [wChip8StackPointer], a
 
+    ; Initialize HRAM variables
+    ldh [hTransferTicksDone], a
+    ldh [hInstructionsDone], a
+
     ; Setup background palette
     ld a, %11110011
     ldh [rBGP], a
 
     ; Setup STAT mode 0 interrupt (HBlank)
-    ld a, IEF_STAT
+    ld a, IEF_STAT | IEF_VBLANK
     ldh [rIE], a
     ld a, STATF_MODE00
     ldh [rSTAT], a

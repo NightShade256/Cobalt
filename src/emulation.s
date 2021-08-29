@@ -3,39 +3,14 @@ INCLUDE "include/hardware.inc/hardware.inc"
 SECTION "Chip8 Main Loop", ROM0
 
 MainLoop::
-    ; Check number of transfer ticks done
-    ; A value of 0x80 means that the transfer is complete
-    ldh a, [hTransferTicksDone]
-    cp $80
-    jr nc, .skipTransfer
-
-    ; Load DE with the source pointer in Chip-8 VRAM
-    sla a
-    ld d, HIGH(wChip8VRAM)
-    ld e, a
-
-    ; Load HL with the destination pointer in GB VRAM
-    sla a
-    ld l, a
-    ld a, $00
-    adc HIGH(_VRAM8000)
-    ld h, a
-
-    ; Pre-increment transfer ticks
-    ldh a, [hTransferTicksDone]
+    ; Check if instruction count for current frame is complete, and if yes
+    ; wait for VBlank
+    ldh a, [hInstructionsDone]
+    cp $08
+    jr nc, .haltUntilVBlank
     inc a
-    ldh [hTransferTicksDone], a
+    ldh [hInstructionsDone], a
 
-    ; Wait for HBlank
-    halt
-
-    ; Transfer 2 bytes of data
-    ; This will take roughly around 16 M-cycles
-    ; We have 51 M-cycles at our hand, excluding additional
-    ; 20 M-cycles of OAM search period
-    call MemCpyTwoBytes
-
-.skipTransfer:
     ; Load BC with the Chip-8 instruction
     ld hl, wChip8ProgramCounter
     ld a, [hl+]
@@ -79,6 +54,19 @@ MainLoop::
 
     ; Jump to the handler
     jp hl
+
+.haltUntilVBlank
+    ; Halt till HBlank or VBlank is hit
+    halt
+
+    ; Check if it was VBlank, if not halt again
+    ldh a, [rLY]
+    cp $90
+    jr c, .haltUntilVBlank
+
+    ; Jump to main loop
+    jp MainLoop
+
 
 SECTION "Chip8 Instruction Jump Table", ROM0
 
