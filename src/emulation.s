@@ -95,7 +95,7 @@ MainJumpTable:
     dw ChipOp_8Top
     dw ChipOp_9XY0
     dw ChipOp_ANNN
-    dw ChipOp_Undefined
+    dw ChipOp_BNNN
     dw ChipOp_Undefined
     dw ChipOp_DXYN
     dw ChipOp_Undefined
@@ -573,6 +573,7 @@ ChipOp_8XY7:
 .yesCarry_Y7
     jp MainLoop
 
+; $9XY0 - Skip the following instruction if the value of register `VX` is not equal to the value of register `VY`.
 ChipOp_9XY0:
     ; Discard top four bits of B, leaving the 0X part in A
     ld a, b
@@ -632,6 +633,34 @@ ChipOp_ANNN:
     ; byte at all
     ld a, c
     ld [wChip8IndexReg + 1], a
+
+    jp MainLoop
+
+; $BNNN - Jump to address `NNN` + `V0`.
+ChipOp_BNNN:
+    ; Discard top four bits of B, leaving NNN in B
+    ld a, b
+    and $0F
+    ld b, a
+
+    ; Construct pointer to V0
+    ld hl, wChip8GPR
+
+    ; Load value of V0 in A
+    ld a, [hl]
+
+    ; Add A to the address stored in BC
+    add c
+    ld c, a
+    ld a, $00
+    adc b
+    ld b, a
+
+    ; Set PC to BC
+    ld a, b
+    ld [wChip8ProgramCounter + 0], a
+    ld a, c
+    ld [wChip8ProgramCounter + 1], a
 
     jp MainLoop
 
