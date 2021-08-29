@@ -104,9 +104,9 @@ MainJumpTable:
 ALIGN 4
 ArithmeticJumpTable:
     dw ChipOp_8XY0
-    dw ChipOp_Undefined
-    dw ChipOp_Undefined
-    dw ChipOp_Undefined
+    dw ChipOp_8XY1
+    dw ChipOp_8XY2
+    dw ChipOp_8XY3
     dw ChipOp_Undefined
     dw ChipOp_Undefined
     dw ChipOp_Undefined
@@ -365,6 +365,96 @@ ChipOp_8XY0:
 
     ; Load the value C into [HL]
     ld [hl], c
+
+    jp MainLoop
+
+; $8XY1 - Set `VX` to `VX` OR `VY`.
+ChipOp_8XY1:
+    ; Discard bottom four bits of C, leaving the Y0 part in A
+    ld a, c
+    and $F0
+    swap a
+
+    ; Construct pointer to the register location Y
+    ld h, HIGH(wChip8GPR)
+    ld l, a
+
+    ; Load the value of the register in C
+    ld c, [hl]
+
+    ; Construct pointer to the register location X
+    ld a, b
+    and $0F
+    ld l, a
+
+    ; Load the value X into register A
+    ld a, [hl]
+
+    ; Peform X OR Y
+    or c
+
+    ; Store X back into memory
+    ld [hl], a
+
+    jp MainLoop
+
+; $8XY2 - Set `VX` to `VX` AND `VY`.
+ChipOp_8XY2:
+    ; Discard bottom four bits of C, leaving the Y0 part in A
+    ld a, c
+    and $F0
+    swap a
+
+    ; Construct pointer to the register location Y
+    ld h, HIGH(wChip8GPR)
+    ld l, a
+
+    ; Load the value of the register in C
+    ld c, [hl]
+
+    ; Construct pointer to the register location X
+    ld a, b
+    and $0F
+    ld l, a
+
+    ; Load the value X into register A
+    ld a, [hl]
+
+    ; Peform X AND Y
+    and c
+
+    ; Store X back into memory
+    ld [hl], a
+
+    jp MainLoop
+
+; $8XY3 - Set `VX` to `VX` XOR `VY`.
+ChipOp_8XY3:
+    ; Discard bottom four bits of C, leaving the Y0 part in A
+    ld a, c
+    and $F0
+    swap a
+
+    ; Construct pointer to the register location Y
+    ld h, HIGH(wChip8GPR)
+    ld l, a
+
+    ; Load the value of the register in C
+    ld c, [hl]
+
+    ; Construct pointer to the register location X
+    ld a, b
+    and $0F
+    ld l, a
+
+    ; Load the value X into register A
+    ld a, [hl]
+
+    ; Peform X XOR Y
+    xor c
+
+    ; Store X back into memory
+    ld [hl], a
 
     jp MainLoop
 
