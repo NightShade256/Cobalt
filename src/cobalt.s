@@ -46,6 +46,12 @@ Main:
 
     call MemZero
 
+    ; Zero initialize Chip-8 Stack
+    ld bc, wChip8StackEnd - wChip8Stack
+    ld hl, wChip8Stack
+
+    call MemZero
+
     ; Zero initialize GB VRAM
     ld bc, $A000 - $8000
     ld hl, $8000
@@ -64,6 +70,10 @@ Main:
     ld [wChip8ProgramCounter + 0], a
     xor a
     ld [wChip8ProgramCounter + 1], a
+
+    ; Set stack pointer to 0
+    ld a, $00
+    ld [wChip8StackPointer], a
 
     ; Setup background palette
     ld a, %11110011

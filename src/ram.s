@@ -26,6 +26,18 @@ wChip8ProgramCounter::
 wChip8IndexReg::
     ds $0002
 
+SECTION "Chip8 Stack", WRAM0
+
+; 16 depth Chip8 subroutine call stack
+ALIGN 8
+wChip8Stack::
+    ds $0020
+wChip8StackEnd::
+
+; Chip8 stack pointer
+wChip8StackPointer::
+    ds $0001
+
 SECTION "Chip8 Other State", HRAM
 
 ; The number of HBlank transfer ticks done.
