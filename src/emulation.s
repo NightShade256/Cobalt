@@ -109,7 +109,7 @@ ArithmeticJumpTable:
     dw ChipOp_8XY3
     dw ChipOp_8XY4
     dw ChipOp_8XY5
-    dw ChipOp_Undefined
+    dw ChipOp_8XY6
     dw ChipOp_8XY7
     dw ChipOp_Undefined
     dw ChipOp_Undefined
@@ -117,7 +117,7 @@ ArithmeticJumpTable:
     dw ChipOp_Undefined
     dw ChipOp_Undefined
     dw ChipOp_Undefined
-    dw ChipOp_Undefined
+    dw ChipOp_8XYE
     dw ChipOp_Undefined
 
 SECTION "Chip8 Instructions", ROM0
@@ -328,7 +328,7 @@ ChipOp_6XNN:
 
 ; $7XNN - Add the value `NN` to register `VX`.
 ChipOp_7XNN:
-    ; Discard top four bits of B, leaving the 0N part in A
+    ; Discard top four bits of B, leaving the 0X part in A
     ld a, b
     and $0F
 
@@ -534,6 +534,41 @@ ChipOp_8XY5:
 .yesCarry_Y5
     jp MainLoop
 
+; $8XY6 - Store the value of register `VY` shifted right one bit in register `VX`.
+; Set register `VF` to the least significant bit prior to the shift
+; `VY` is unchanged
+ChipOp_8XY6:
+    ; Discard top four bits of C, leaving the Y0 part in A
+    ld a, c
+    and $F0
+    swap a
+
+    ; Construct pointer to the register location
+    ld h, HIGH(wChip8GPR)
+    ld l, a
+
+    ; Load value of the register in E
+    ld e, [hl]
+
+    ; Construct pointer to V[X]
+    ld a, b
+    and $0F
+    ld l, a
+
+    ; Shift right E by 1 bit
+    srl e
+
+    ; Store the value back into V[X]
+    ld [hl], e
+
+    ; Set V[F] to the least significant bit before shift
+    jr nc, .lsbIsZero_Y6
+    ld l, $0F
+    ld [hl], $01
+
+.lsbIsZero_Y6
+    jp MainLoop
+
 ; $8XY7 - Set register VX to the value of `VY` minus `VX`.
 ; Set `VF` to 00 if a borrow occurs
 ; Set `VF` to 01 if a borrow does not occur
@@ -571,6 +606,41 @@ ChipOp_8XY7:
     ld [hl], $01
 
 .yesCarry_Y7
+    jp MainLoop
+
+; $8XYE - Store the value of register `VY` shifted left one bit in register `VX`.
+; Set register `VF` to the most significant bit prior to the shift
+; `VY` is unchanged
+ChipOp_8XYE:
+    ; Discard top four bits of C, leaving the Y0 part in A
+    ld a, c
+    and $F0
+    swap a
+
+    ; Construct pointer to the register location
+    ld h, HIGH(wChip8GPR)
+    ld l, a
+
+    ; Load value of the register in E
+    ld e, [hl]
+
+    ; Construct pointer to V[X]
+    ld a, b
+    and $0F
+    ld l, a
+
+    ; Shift right E by 1 bit
+    sla e
+
+    ; Store the value back into V[X]
+    ld [hl], e
+
+    ; Set V[F] to the least significant bit before shift
+    jr nc, .msbIsZero_YE
+    ld l, $0F
+    ld [hl], $01
+
+.msbIsZero_YE
     jp MainLoop
 
 ; $9XY0 - Skip the following instruction if the value of register `VX` is not equal to the value of register `VY`.
