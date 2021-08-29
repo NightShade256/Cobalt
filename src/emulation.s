@@ -86,7 +86,7 @@ ALIGN 4
 MainJumpTable:
     dw ChipOp_0Top
     dw ChipOp_1NNN
-    dw ChipOp_Undefined
+    dw ChipOp_2NNN
     dw ChipOp_3XNN
     dw ChipOp_4XNN
     dw ChipOp_5XY0
@@ -128,12 +128,11 @@ ChipOp_Undefined:
 
 ChipOp_0Top:
     ld a, c
-    and $0F
 
-    cp $00
+    cp $E0
     jp z, ChipOp_00E0
-    cp $0E
-    jp z, ChipOp_Undefined
+    cp $EE
+    jp z, ChipOp_00EE
 
     jp MainLoop
 
@@ -175,6 +174,25 @@ ChipOp_00E0:
 
     jp MainLoop
 
+; $00EE - Return from a subroutine.
+ChipOp_00EE:
+    ; Subtract 1 from the stack pointer
+    ld a, [wChip8StackPointer]
+    dec a
+    ld [wChip8StackPointer], a
+
+    ; Pop a word off the stack and assign it to PC
+    sla a
+    ld h, HIGH(wChip8Stack)
+    ld l, a
+
+    ld a, [hl+]
+    ld [wChip8ProgramCounter + 0], a
+    ld a, [hl+]
+    ld [wChip8ProgramCounter + 1], a
+
+    jp MainLoop
+
 ; $1NNN - Jump to address `NNN`.
 ChipOp_1NNN:        
     ; Discard top four bits of B, leaving the 0N part in A
@@ -189,6 +207,39 @@ ChipOp_1NNN:
     ; Load the bottom byte in PC
     ; Since Chip8 RAM is aligned we don't need to touch the bottom
     ; byte at all
+    ld a, c
+    ld [wChip8ProgramCounter + 1], a
+
+    jp MainLoop
+
+; $2NNN - Execute subroutine starting at address `NNN`.
+ChipOp_2NNN:
+    ; Discard top four bits of B and leave NNN in BC
+    ld a, b
+    and $0F
+    add HIGH(wChip8RAM)
+    ld b, a
+
+    ; Load the stack pointer to A, pre-inc it and put it back
+    ld a, [wChip8StackPointer]
+    inc a
+    ld [wChip8StackPointer], a
+    dec a
+
+    ; Construct pointer to the stack
+    sla a
+    ld h, HIGH(wChip8Stack)
+    ld l, a
+
+    ; Push PC onto the stack
+    ld a, [wChip8ProgramCounter + 0]
+    ld [hl+], a
+    ld a, [wChip8ProgramCounter + 1]
+    ld [hl+], a
+
+    ; Jump to NNN
+    ld a, b
+    ld [wChip8ProgramCounter + 0], a
     ld a, c
     ld [wChip8ProgramCounter + 1], a
 

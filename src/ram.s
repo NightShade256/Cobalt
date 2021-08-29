@@ -1,4 +1,4 @@
-SECTION "Chip8 RAM", WRAM0, ALIGN[8]
+SECTION "Chip8 RAM", WRAM0, ALIGN[12]
 
 ; 4 kB of Chip8 program memory
 wChip8RAM::
