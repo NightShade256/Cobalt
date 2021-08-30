@@ -153,6 +153,8 @@ ChipOp_FTop:
 
     cp $07
     jp z, ChipOp_FX07
+    cp $33
+    jp z, ChipOp_FX33
 
     jp MainLoop
 
@@ -933,7 +935,7 @@ ChipOp_DXYN:
     ldh [hSpriteSize], a
 
     ; Check if N is zero and jump back if not
-    cp $00
+    and a
     jr nz, .forNLoop
 
     ; Set HBlank transfer flag
@@ -956,5 +958,73 @@ ChipOp_FX07:
 
     ; Store the value in VX
     ld [hl], a
+
+    jp MainLoop
+
+ChipOp_FX33:
+    ; Discard top four bits of B leaving 0X in A
+    ld a, b
+    and $0F
+
+    ; Construct pointer to register location
+    ld h, HIGH(wChip8GPR)
+    ld l, a
+
+    ; Read the value of the register
+    ld b, [hl]
+
+    ; Construct pointer to the destination
+    ld a, [wChip8IndexReg + 0]
+    ld h, a
+    ld a, [wChip8IndexReg + 1]
+    ld l, a
+
+    ; Write out 100s place
+    ld a, b
+    ld b, $64
+    ld c, $00
+
+.hundredsLoop
+    cp b
+    jr c, .endHundredsLoop
+
+    sub b
+    inc c
+    jr .hundredsLoop
+
+.endHundredsLoop
+    ld [hl], c
+    inc hl
+
+    ; Write out 10s place
+    ld b, $0A
+    ld c, $00
+
+.tensLoop
+    cp b
+    jr c, .endTensLoop
+
+    sub b
+    inc c
+    jr .tensLoop
+
+.endTensLoop
+    ld [hl], c
+    inc hl
+
+    ; Write out 1s place
+    ld b, $01
+    ld c, $00
+
+.onesLoop
+    cp b
+    jr c, .endOnesLoop
+
+    sub b
+    inc c
+    jr .onesLoop
+
+.endOnesLoop
+    ld [hl], c
 
     jp MainLoop
