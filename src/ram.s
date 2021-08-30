@@ -61,3 +61,7 @@ hSpriteSize::
 ; The number of instructions executed within the current frame
 hInstructionsDone::
     ds $0001
+
+; The state of the joypad register at the start of the frame
+hJoypadState::
+    ds $0001

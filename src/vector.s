@@ -1,3 +1,5 @@
+INCLUDE "include/hardware.inc/hardware.inc"
+
 SECTION "Interrupt Vectors", ROM0[$0000]
 
 _Vector_0:
@@ -34,6 +36,12 @@ VBlankHandler:
     ; Zero fill `hInstructionsDone` to signify start of new frame
     xor a
     ldh [hInstructionsDone], a
+
+    ; Store joypad state in HRAM
+    ld a, P1F_5
+    ldh [rP1], a
+    ldh a, [rP1]
+    ldh [hJoypadState], a
 
     ; Decrement sound and delay timers
     ld a, [wChip8DelayTimer]
