@@ -155,6 +155,8 @@ ChipOp_FTop:
     jp z, ChipOp_FX07
     cp $33
     jp z, ChipOp_FX33
+    cp $55
+    jp z, ChipOp_FX55
     cp $65
     jp z, ChipOp_FX65
 
@@ -1031,6 +1033,36 @@ ChipOp_FX33:
 
 .endOnesLoop
     ld [hl], c
+
+    jp MainLoop
+
+; $FX55 - Store the values of registers `V0` to `VX` inclusive in memory starting at address `I`.
+; `I` is set to `I + X + 1` after operation
+ChipOp_FX55:
+    ; Discard top four bits of B load that in C, and zero out B
+    ld a, b
+    and $0F
+    inc a
+    ld c, a
+    ld b, $00
+
+    ; Construct source pointer
+    ld de, wChip8GPR
+
+    ; Construct destination pointer
+    ld a, [wChip8IndexReg + 0]
+    ld h, a
+    ld a, [wChip8IndexReg + 1]
+    ld l, a
+
+    ; Copy the registers to memory
+    call MemCpy
+
+    ; Increment Index Reg
+    ld a, h
+    ld [wChip8IndexReg + 0], a
+    ld a, l
+    ld [wChip8IndexReg + 1], a
 
     jp MainLoop
 
