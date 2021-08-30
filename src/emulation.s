@@ -946,6 +946,7 @@ ChipOp_DXYN:
 
     jp MainLoop
 
+; $FX07 - Store the current value of the delay timer in register `VX`.
 ChipOp_FX07:
     ; Discard top four bits of B leaving 0X in A
     ld a, b
@@ -963,6 +964,8 @@ ChipOp_FX07:
 
     jp MainLoop
 
+; $FX33 - Store the binary-coded decimal equivalent of the value stored in register `VX` 
+; at addresses `I`, `I + 1`, and `I + 2`.
 ChipOp_FX33:
     ; Discard top four bits of B leaving 0X in A
     ld a, b
@@ -1031,6 +1034,8 @@ ChipOp_FX33:
 
     jp MainLoop
 
+; $FX65 - Fill registers `V0` to `VX` inclusive with the values stored in memory starting at address `I`.
+; `I` is set to `I + X + 1` after operation
 ChipOp_FX65:
     ; Discard top four bits of B load that in C, and zero out B
     ld a, b
