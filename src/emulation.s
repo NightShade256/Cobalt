@@ -87,7 +87,7 @@ MainJumpTable:
     dw ChipOp_Undefined
     dw ChipOp_DXYN
     dw ChipOp_Undefined
-    dw ChipOp_Undefined
+    dw ChipOp_FTop
 
 ALIGN 4
 ArithmeticJumpTable:
@@ -147,6 +147,14 @@ ChipOp_8Top:
 
     ; Jump to the handler
     jp hl
+
+ChipOp_FTop:
+    ld a, c
+
+    cp $07
+    jp z, ChipOp_FX07
+
+    jp MainLoop
 
 ; $00E0 - Clear the screen.
 ChipOp_00E0:
@@ -935,4 +943,18 @@ ChipOp_DXYN:
     jp MainLoop
 
 ChipOp_FX07:
+    ; Discard top four bits of B leaving 0X in A
+    ld a, b
+    and $F0
+
+    ; Construct pointer to register location
+    ld h, HIGH(wChip8GPR)
+    ld l, a
+
+    ; Read the value of the delay timer
+    ld a, [wChip8DelayTimer]
+
+    ; Store the value in VX
+    ld [hl], a
+
     jp MainLoop
