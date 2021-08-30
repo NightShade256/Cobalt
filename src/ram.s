@@ -39,6 +39,14 @@ wChip8StackEnd::
 wChip8StackPointer::
     ds $0001
 
+SECTION "Chip8 Timers", WRAM0
+
+wChip8DelayTimer::
+    ds $0001
+
+wChip8SoundTimer::
+    ds $0001
+
 SECTION "Chip8 Other State", HRAM
 
 ; The number of HBlank transfer ticks done.

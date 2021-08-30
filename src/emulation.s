@@ -6,7 +6,7 @@ MainLoop::
     ; Check if instruction count for current frame is complete, and if yes
     ; wait for VBlank
     ldh a, [hInstructionsDone]
-    cp $08
+    cp $0A
     jr nc, .haltUntilVBlank
     inc a
     ldh [hInstructionsDone], a
@@ -932,4 +932,7 @@ ChipOp_DXYN:
     xor a
     ldh [hTransferTicksDone], a
 
+    jp MainLoop
+
+ChipOp_FX07:
     jp MainLoop
