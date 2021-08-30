@@ -1101,6 +1101,7 @@ ChipOp_FX29:
     add $05
     ld c, a
     dec b
+    jr .multiplyLoop
 
 .endMultiplyLoop
     ; Load the value into index register
