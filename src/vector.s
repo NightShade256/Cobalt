@@ -35,6 +35,21 @@ VBlankHandler:
     xor a
     ldh [hInstructionsDone], a
 
+    ; Decrement sound and delay timers
+    ld a, [wChip8DelayTimer]
+    and a
+    jr z, .skipDelayTimer
+    dec a
+    ld [wChip8DelayTimer], a
+
+.skipDelayTimer:
+    ld a, [wChip8SoundTimer]
+    and a
+    jr z, .skipSoundTimer
+    dec a
+    ld [wChip8SoundTimer], a
+
+.skipSoundTimer:
     pop af
     ret
 
