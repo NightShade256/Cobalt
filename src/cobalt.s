@@ -86,6 +86,8 @@ Main:
     ; Set stack pointer to 0
     ld a, $00
     ld [wChip8StackPointer], a
+    ld [wChip8DelayTimer], a
+    ld [wChip8SoundTimer], a
 
     ; Initialize HRAM variables
     ldh [hTransferTicksDone], a
