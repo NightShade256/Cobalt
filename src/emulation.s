@@ -158,6 +158,8 @@ ChipOp_FTop:
     jp z, ChipOp_FX18
     cp $1E
     jp z, ChipOp_FX1E
+    cp $29
+    jp z, ChipOp_FX29
     cp $33
     jp z, ChipOp_FX33
     cp $55
@@ -546,12 +548,15 @@ ChipOp_8XY4:
     ; Store X back into memory
     ld [hl], a
 
-    ; If carry occurs set VF to 1
-    jr nc, .noCarry_Y4
+    ; If carry occurs set VF to 1 else to 0
     ld l, $0F
+    jr nc, .noCarry_Y4
     ld [hl], $01
+    jp MainLoop
 
 .noCarry_Y4
+    ld [hl], $00
+
     jp MainLoop
 
 ; $8XY5 - Subtract the value of register `VY` from register `VX`.
@@ -585,11 +590,14 @@ ChipOp_8XY5:
     ld [hl], a
 
     ; If carry does not occur set VF to 1
-    jr c, .yesCarry_Y5
     ld l, $0F
+    jr c, .yesCarry_Y5
     ld [hl], $01
+    jp MainLoop
 
 .yesCarry_Y5
+    ld [hl], $00
+
     jp MainLoop
 
 ; $8XY6 - Store the value of register `VY` shifted right one bit in register `VX`.
@@ -620,11 +628,14 @@ ChipOp_8XY6:
     ld [hl], e
 
     ; Set V[F] to the least significant bit before shift
-    jr nc, .lsbIsZero_Y6
     ld l, $0F
+    jr nc, .lsbIsZero_Y6
     ld [hl], $01
+    jp MainLoop
 
 .lsbIsZero_Y6
+    ld [hl], $00
+
     jp MainLoop
 
 ; $8XY7 - Set register VX to the value of `VY` minus `VX`.
@@ -659,11 +670,14 @@ ChipOp_8XY7:
     ld [hl], a
 
     ; If carry does not occur set VF to 1
-    jr c, .yesCarry_Y7
     ld l, $0F
+    jr c, .yesCarry_Y7
     ld [hl], $01
+    jp MainLoop
 
 .yesCarry_Y7
+    ld [hl], $00
+
     jp MainLoop
 
 ; $8XYE - Store the value of register `VY` shifted left one bit in register `VX`.
@@ -694,11 +708,14 @@ ChipOp_8XYE:
     ld [hl], e
 
     ; Set V[F] to the least significant bit before shift
-    jr nc, .msbIsZero_YE
     ld l, $0F
+    jr nc, .msbIsZero_YE
     ld [hl], $01
+    jp MainLoop
 
 .msbIsZero_YE
+    ld [hl], $00
+
     jp MainLoop
 
 ; $9XY0 - Skip the following instruction if the value of register `VX` is not equal to the value of register `VY`.
@@ -1058,6 +1075,38 @@ ChipOp_FX1E:
     ld a, d
     ld [wChip8IndexReg + 0], a
     ld a, e
+    ld [wChip8IndexReg + 1], a
+
+    jp MainLoop
+
+ChipOp_FX29:
+    ; Discard top four bits of B leaving 0X in A
+    ld a, b
+    and $0F
+
+    ; Construct pointer to register location
+    ld h, HIGH(wChip8GPR)
+    ld l, a
+
+    ; Read the value of the register in B
+    ld b, [hl]
+    ld c, $00
+
+    ; Multiply five to the above value
+.multiplyLoop
+    ld a, b
+    and a
+    jr z, .endMultiplyLoop
+    ld a, c
+    add $05
+    ld c, a
+    dec b
+
+.endMultiplyLoop
+    ; Load the value into index register
+    ld a, HIGH(wChip8RAM)
+    ld [wChip8IndexReg + 0], a
+    ld a, c
     ld [wChip8IndexReg + 1], a
 
     jp MainLoop
