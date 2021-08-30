@@ -17,11 +17,9 @@ debugging aids.
 
 ## ToDo
 
-- All instructions are pending except, `00E0`, `1NNN`, `6XNN`, `7XNN`, `ANNN` and `DXYN`
+- `EX9E`, `EXA1` and `FX0A` instructions
 - Sprite collision detection in DXYN
-- Both sound and delay timers
 - Audio
-- Joypad input
 
 ## Note
 
