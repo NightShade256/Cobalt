@@ -3,6 +3,7 @@ SECTION "Chip8 RAM", WRAM0, ALIGN[12]
 ; 4 kB of Chip8 program memory
 wChip8RAM::
     ds $1000
+wChip8RAMEnd::
 
 SECTION "Chip8 VRAM", WRAM0, ALIGN[8]
 

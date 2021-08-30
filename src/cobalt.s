@@ -26,6 +26,12 @@ Main:
     ; Turn off the PPU
     call TurnPpuOff
 
+    ; Zero Initialize Chip-8 main memory
+    ld bc, wChip8RAMEnd - wChip8RAM
+    ld hl, wChip8RAM
+
+    call MemZero
+
     ; Copy font to Chip-8 main memory
     ld bc, Chip8FontEnd - Chip8FontStart
     ld de, Chip8FontStart

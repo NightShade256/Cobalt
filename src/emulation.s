@@ -155,6 +155,8 @@ ChipOp_FTop:
     jp z, ChipOp_FX07
     cp $33
     jp z, ChipOp_FX33
+    cp $65
+    jp z, ChipOp_FX65
 
     jp MainLoop
 
@@ -1026,5 +1028,33 @@ ChipOp_FX33:
 
 .endOnesLoop
     ld [hl], c
+
+    jp MainLoop
+
+ChipOp_FX65:
+    ; Discard top four bits of B load that in C, and zero out B
+    ld a, b
+    and $0F
+    inc a
+    ld c, a
+    ld b, $00
+
+    ; Construct source pointer
+    ld a, [wChip8IndexReg + 0]
+    ld d, a
+    ld a, [wChip8IndexReg + 1]
+    ld e, a
+
+    ; Construct destination pointer
+    ld hl, wChip8GPR
+
+    ; Copy the memory to registers
+    call MemCpy
+
+    ; Increment Index Reg
+    ld a, d
+    ld [wChip8IndexReg + 0], a
+    ld a, e
+    ld [wChip8IndexReg + 1], a
 
     jp MainLoop
