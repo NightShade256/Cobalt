@@ -6,7 +6,7 @@ MainLoop::
     ; Check if instruction count for current frame is complete, and if yes
     ; wait for VBlank
     ldh a, [hInstructionsDone]
-    cp $0A
+    cp $08
     jr nc, .haltUntilVBlank
     inc a
     ldh [hInstructionsDone], a
@@ -153,6 +153,8 @@ ChipOp_FTop:
 
     cp $07
     jp z, ChipOp_FX07
+    cp $1E
+    jp z, ChipOp_FX1E
     cp $33
     jp z, ChipOp_FX33
     cp $55
@@ -972,7 +974,7 @@ ChipOp_DXYN:
 ChipOp_FX07:
     ; Discard top four bits of B leaving 0X in A
     ld a, b
-    and $F0
+    and $0F
 
     ; Construct pointer to register location
     ld h, HIGH(wChip8GPR)
@@ -983,6 +985,41 @@ ChipOp_FX07:
 
     ; Store the value in VX
     ld [hl], a
+
+    jp MainLoop
+
+; $FX1E - Add the value stored in register `VX` to register `I`.
+ChipOp_FX1E:
+    ; Discard top four bits of B leaving 0X in A
+    ld a, b
+    and $0F
+
+    ; Construct pointer to register location
+    ld h, HIGH(wChip8GPR)
+    ld l, a
+
+    ; Read the value of the register in B
+    ld b, [hl]
+
+    ; Load the value of index register in DE
+    ld a, [wChip8IndexReg + 0]
+    ld d, a
+    ld a, [wChip8IndexReg + 1]
+    ld e, a
+
+    ; Add B to DE
+    ld a, b
+    add e
+    ld e, a
+    ld a, $00
+    adc d
+    ld d, a
+
+    ; Store Index register back
+    ld a, d
+    ld [wChip8IndexReg + 0], a
+    ld a, e
+    ld [wChip8IndexReg + 1], a
 
     jp MainLoop
 
