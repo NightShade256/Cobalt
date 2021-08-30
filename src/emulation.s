@@ -167,6 +167,10 @@ ChipOp_FTop:
 
     cp $07
     jp z, ChipOp_FX07
+    cp $15
+    jp z, ChipOp_FX15
+    cp $18
+    jp z, ChipOp_FX18
     cp $1E
     jp z, ChipOp_FX1E
     cp $33
@@ -999,6 +1003,42 @@ ChipOp_FX07:
 
     ; Store the value in VX
     ld [hl], a
+
+    jp MainLoop
+
+; $FX15 - Set the delay timer to the value of register `VX`.
+ChipOp_FX15:
+    ; Discard top four bits of B leaving 0X in A
+    ld a, b
+    and $0F
+
+    ; Construct pointer to register location
+    ld h, HIGH(wChip8GPR)
+    ld l, a
+
+    ; Read the value of the register
+    ld a, [hl]
+
+    ; Store the value in delay timer
+    ld [wChip8DelayTimer], a
+
+    jp MainLoop
+
+; $FX18 - Set the sound timer to the value of register `VX`.
+ChipOp_FX18:
+    ; Discard top four bits of B leaving 0X in A
+    ld a, b
+    and $0F
+
+    ; Construct pointer to register location
+    ld h, HIGH(wChip8GPR)
+    ld l, a
+
+    ; Read the value of the register
+    ld a, [hl]
+
+    ; Store the value in sound timer
+    ld [wChip8SoundTimer], a
 
     jp MainLoop
 
