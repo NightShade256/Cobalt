@@ -84,7 +84,7 @@ MainJumpTable:
     dw ChipOp_9XY0
     dw ChipOp_ANNN
     dw ChipOp_BNNN
-    dw ChipOp_Undefined
+    dw ChipOp_CXNN
     dw ChipOp_DXYN
     dw ChipOp_Undefined
     dw ChipOp_FTop
@@ -784,6 +784,26 @@ ChipOp_BNNN:
     ld [wChip8ProgramCounter + 0], a
     ld a, c
     ld [wChip8ProgramCounter + 1], a
+
+    jp MainLoop
+
+; $CXNN - Set `VX` to a random number with a mask of `NN`.
+ChipOp_CXNN:
+    ; Discard top four bits of B, leaving the 0X part in A
+    ld a, b
+    and $0F
+
+    ; Construct pointer to the register location X
+    ld h, HIGH(wChip8GPR)
+    ld l, a
+
+    ; Load a random number (in this case it is just DIV)
+    ; mask it with C
+    ldh a, [rDIV]
+    and c
+
+    ; Load it into VX
+    ld [hl], a
 
     jp MainLoop
 
