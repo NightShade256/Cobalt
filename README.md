@@ -18,7 +18,6 @@ debugging aids.
 
 ## ToDo
 
-- `EX9E`, `EXA1` and `FX0A` instructions
 - Sprite collision detection in DXYN
 - Audio
 
