@@ -92,6 +92,7 @@ Main:
     ; Initialize HRAM variables
     ldh [hTransferTicksDone], a
     ldh [hInstructionsDone], a
+    ldh [hDrawCollision], a
 
     ; Setup background palette
     ld a, %11110011

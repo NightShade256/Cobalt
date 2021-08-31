@@ -65,3 +65,7 @@ hInstructionsDone::
 ; The state of the joypad register at the start of the frame
 hJoypadState::
     ds $0001
+
+; Indicates if a collision occured while drawing
+hDrawCollision::
+    ds $0001
