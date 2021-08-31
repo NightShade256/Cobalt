@@ -1079,6 +1079,8 @@ ChipOp_FX1E:
 
     jp MainLoop
 
+; $FX29 - Set `I` to the memory address of the sprite data corresponding to the
+; hexadecimal digit stored in register `VX`.
 ChipOp_FX29:
     ; Discard top four bits of B leaving 0X in A
     ld a, b
