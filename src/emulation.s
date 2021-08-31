@@ -6,7 +6,7 @@ MainLoop::
     ; Check if instruction count for current frame is complete, and if yes
     ; wait for VBlank
     ldh a, [hInstructionsDone]
-    cp $08
+    cp $0A
     jr nc, .haltUntilVBlank
     inc a
     ldh [hInstructionsDone], a
@@ -85,7 +85,7 @@ MainJumpTable:
     dw ChipOp_BNNN
     dw ChipOp_CXNN
     dw ChipOp_DXYN
-    dw ChipOp_Undefined
+    dw ChipOp_ETop
     dw ChipOp_FTop
 
 ALIGN 4
@@ -146,6 +146,16 @@ ChipOp_8Top:
 
     ; Jump to the handler
     jp hl
+
+ChipOp_ETop:
+    ld a, c
+
+    cp $9E
+    jp z, ChipOp_EX9E
+    cp $A1
+    jp z, ChipOp_EXA1
+
+    jp MainLoop
 
 ChipOp_FTop:
     ld a, c
@@ -990,6 +1000,118 @@ ChipOp_DXYN:
     xor a
     ldh [hTransferTicksDone], a
 
+    jp MainLoop
+
+; $EX9E - Skip the following instruction if the key corresponding
+; to the hex value currently stored in register `VX` is pressed.
+ChipOp_EX9E:
+    ; Discard top four bits of B leaving 0X in A
+    ld a, b
+    and $0F
+
+    ; Construct pointer to register location
+    ld h, HIGH(wChip8GPR)
+    ld l, a
+
+    ; Load the value into C
+    ld c, [hl]
+
+    ; Reverse map the key
+    ld b, $01
+    ld de, Chip8KeyMapStart
+
+.mapKey:
+    ld a, b
+    cp $10
+    jr z, .failedToMap
+    ld a, [de]
+    cp c
+    jr z, .ableToMap
+
+.incrementLoopVars:
+    sla b
+    inc de
+    jr .mapKey
+
+.ableToMap:
+    ldh a, [hJoypadState]
+    cpl
+    and b
+    jr z, .failedToMap
+
+    ; Load PC into HL
+    ld a, [wChip8ProgramCounter + 0]
+    ld h, a
+    ld a, [wChip8ProgramCounter + 1]
+    ld l, a
+
+    ; Add two to HL
+    inc hl
+    inc hl
+
+    ; Write-back HL into PC
+    ld a, h
+    ld [wChip8ProgramCounter + 0], a
+    ld a, l
+    ld [wChip8ProgramCounter + 1], a
+
+.failedToMap:
+    jp MainLoop
+
+; $EXA1 - Skip the following instruction if the key corresponding
+; to the hex value currently stored in register `VX` is not pressed.
+ChipOp_EXA1:
+    ; Discard top four bits of B leaving 0X in A
+    ld a, b
+    and $0F
+
+    ; Construct pointer to register location
+    ld h, HIGH(wChip8GPR)
+    ld l, a
+
+    ; Load the value into C
+    ld c, [hl]
+
+    ; Reverse map the key
+    ld b, $01
+    ld de, Chip8KeyMapStart
+
+.mapKey:
+    ld a, b
+    cp $10
+    jr z, .failedToMap
+    ld a, [de]
+    cp c
+    jr z, .ableToMap
+
+.incrementLoopVars:
+    sla b
+    inc de
+    jr .mapKey
+
+.ableToMap:
+    ldh a, [hJoypadState]
+    cpl
+    and b
+    jr nz, .failedToMap
+
+    ; Load PC into HL
+    ld a, [wChip8ProgramCounter + 0]
+    ld h, a
+    ld a, [wChip8ProgramCounter + 1]
+    ld l, a
+
+    ; Add two to HL
+    inc hl
+    inc hl
+
+    ; Write-back HL into PC
+    ld a, h
+    ld [wChip8ProgramCounter + 0], a
+    ld a, l
+    ld [wChip8ProgramCounter + 1], a
+
+.failedToMap:
     jp MainLoop
 
 ; $FX07 - Store the current value of the delay timer in register `VX`.
