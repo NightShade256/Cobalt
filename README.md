@@ -18,7 +18,6 @@ debugging aids.
 
 ## ToDo
 
-- Sprite collision detection in DXYN
 - Audio
 
 ## Note

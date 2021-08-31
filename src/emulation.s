@@ -946,7 +946,15 @@ ChipOp_DXYN:
     dec a
     jr nz, .yesNextTile
 
-    ; Load the byte from VRAM, XOR sprite data and then put it back
+    ; Load the byte from VRAM, and detect collision
+    ld a, [hl]
+    and d
+    ld b, a
+    ldh a, [hDrawCollision]
+    or b
+    ldh [hDrawCollision], a
+
+    ; XOR the sprite onto the screen
     ld a, [hl]
     xor d
     ld [hl], a
@@ -961,7 +969,15 @@ ChipOp_DXYN:
     adc h
     ld h, a
 
-    ; Load the byte from VRAM, XOR sprite data and then put it back
+    ; Load the byte from VRAM, and detect collision
+    ld a, [hl]
+    and c
+    ld b, a
+    ldh a, [hDrawCollision]
+    or b
+    ldh [hDrawCollision], a
+
+    ; XOR the sprite onto the screen
     ld a, [hl]
     xor c
     ld [hl], a
@@ -971,6 +987,14 @@ ChipOp_DXYN:
     jr .isDone
 
 .noNextTile:
+    ; Load the byte from VRAM, and detect collision
+    ld a, [hl]
+    and d
+    ld b, a
+    ldh a, [hDrawCollision]
+    or b
+    ldh [hDrawCollision], a
+
     ; Just load the VRAM byte into A, XOR sprite data and then put the
     ; result back in
     ld a, [hl]
@@ -999,6 +1023,18 @@ ChipOp_DXYN:
     ; Set HBlank transfer flag
     xor a
     ldh [hTransferTicksDone], a
+
+    ; Set VF if there was a collision
+    ld a, [hDrawCollision]
+    and a
+    jr z, .noCollision
+    ld h, HIGH(wChip8GPR)
+    ld l, $0F
+    ld [hl], $01
+
+.noCollision:
+    xor a
+    ldh [hDrawCollision], a
 
     jp MainLoop
 
