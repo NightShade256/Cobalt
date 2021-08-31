@@ -1,7 +1,7 @@
 SECTION "Chip8 ROM", ROM0
 
 Chip8RomStart::
-    INCBIN "roms/Test_Opcode.ch8"
+    INCBIN "roms/Random_Number_Test.ch8"
 Chip8RomEnd::
 
 SECTION "Chip8 Font", ROM0
@@ -24,6 +24,15 @@ Chip8FontStart::
     db $F0, $80, $F0, $80, $F0, ; E
     db $F0, $80, $F0, $80, $80, ; F
 Chip8FontEnd::
+
+SECTION "Chip8 Keymap", ROM0
+
+Chip8KeyMapStart::
+    db $09
+    db $07
+    db $05
+    db $08
+Chip8KeyMapEnd::
 
 SECTION "Tile Map", ROM0
 

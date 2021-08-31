@@ -152,6 +152,8 @@ ChipOp_FTop:
 
     cp $07
     jp z, ChipOp_FX07
+    cp $0A
+    jp z, ChipOp_FX0A
     cp $15
     jp z, ChipOp_FX15
     cp $18
@@ -1006,6 +1008,75 @@ ChipOp_FX07:
     ; Store the value in VX
     ld [hl], a
 
+    jp MainLoop
+
+; $FX0A - Wait for a keypress and store the result in register `VX`.
+ChipOp_FX0A:
+    ; Discard top four bits of B leaving 0X in A
+    ld a, b
+    and $0F
+
+    ; Construct pointer to register location
+    ld h, HIGH(wChip8GPR)
+    ld l, a
+    
+    ; Load the current joypad state in A
+    ldh a, [hJoypadState]
+
+    ; Discard the unused and selection bits of the state
+    ; and invert it for easy use
+    cpl
+    and $0F
+
+    ; Store the state in C for the time being
+    ld c, a
+
+    ; Check if there are any pressed keys
+    ld b, $01
+
+    ; Construct pointer to keymap
+    ld de, Chip8KeyMapStart
+
+.checkPressedKeys:
+    ; Check loop conditions
+    ld a, b
+    cp $10
+    jr z, .notFoundKey 
+
+    ; Check if the key is pressed
+    ld a, c
+    and b
+    jr z, .incrementLoopVars
+
+    ; Since the key is pressed, load the key from the keymap
+    ; and store it into VX
+    ld a, [de]
+    ld [hl], a
+    jr .foundKey
+
+.incrementLoopVars:
+    ; Increment loop variables since we didn't find a key
+    sla b
+    inc de
+    jr .checkPressedKeys
+
+.notFoundKey:
+    ; Decrement the PC by 2, thereby emulating waiting
+    ; for a keypress
+    ld a, [wChip8ProgramCounter + 0]
+    ld h, a
+    ld a, [wChip8ProgramCounter + 1]
+    ld l, a
+
+    dec hl
+    dec hl
+
+    ld a, h
+    ld [wChip8ProgramCounter + 0], a
+    ld a, l
+    ld [wChip8ProgramCounter + 1], a
+
+.foundKey:
     jp MainLoop
 
 ; $FX15 - Set the delay timer to the value of register `VX`.
