@@ -14,11 +14,23 @@ make all
 ```
 
 This will produce the ROM file in the `bin/` subdirectory along with some additional
-debugging aids.
+debugging aids. The default Chip-8 ROM embedded into Cobalt is the `Snake` game.
+
+To change the ROM file, you need to edit the `src/rom.s` file manually. The keymappings
+are like so,
+
+| GB    | Chip-8 |
+| ----- | ------ |
+| Right | 0x9    |
+| Left  | 0x7    |
+| Up    | 0x5    |
+| Down  | 0x8    |
+
+To change them, again you need to edit `src/rom.s` file manually.
 
 ## ToDo
 
-- Audio
+-   Audio
 
 ## Note
 
