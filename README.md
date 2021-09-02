@@ -4,6 +4,8 @@ A work-in-progress Chip-8 interpreter written for the Game Boy.
 
 <img src="./README/Snake.png" width="300" /> &nbsp;
 <img src="./README/Corax Test ROM.png" width="300" /> &nbsp;
+<img src="./README/Breakout.png" width="300" /> &nbsp;
+<img src="./README/Trip8.png" width="300" /> &nbsp;
 
 ## Build Instructions
 
@@ -14,10 +16,9 @@ make all
 ```
 
 This will produce the ROM file in the `bin/` subdirectory along with some additional
-debugging aids. The default Chip-8 ROM embedded into Cobalt is the `Snake` game.
+debugging aids.
 
-To change the ROM file, you need to edit the `src/rom.s` file manually. The keymappings
-are like so,
+The `Snake` ROM is embedded into Cobalt by default, and the key mappings are like so,
 
 | GB    | Chip-8 |
 | ----- | ------ |
@@ -26,11 +27,11 @@ are like so,
 | Up    | 0x5    |
 | Down  | 0x8    |
 
-To change them, again you need to edit `src/rom.s` file manually.
+To change the ROM file and key mappings, you need to edit the `src/rom.s` file manually.
 
-## ToDo
+## Todo
 
--   Audio
+-   Audio (not planned currently)
 
 ## Note
 
