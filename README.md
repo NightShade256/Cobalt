@@ -1,6 +1,6 @@
 # Cobalt
 
-A work-in-progress Chip-8 interpreter written for the Game Boy.
+Cobalt is a Chip-8 interpreter written for the Game Boy.
 
 <img src="./README/Snake.png" width="300" /> &nbsp;
 <img src="./README/Corax Test ROM.png" width="300" /> &nbsp;
