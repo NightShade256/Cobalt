@@ -29,10 +29,6 @@ The `Snake` ROM is embedded into Cobalt by default, and the key mappings are lik
 
 To change the ROM file and key mappings, you need to edit the `src/rom.s` file manually.
 
-## Todo
-
--   Audio (not planned currently)
-
 ## Note
 
 The `Makefile` is adapted from the [GB Boilerplate](https://github.com/ISSOtm/gb-boilerplate/) repository, which is under the MIT license. A copy of the license may be found in the `README/` subdirectory.
