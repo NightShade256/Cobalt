@@ -53,11 +53,21 @@ VBlankHandler:
 .skipDelayTimer:
     ld a, [wChip8SoundTimer]
     and a
-    jr z, .skipSoundTimer
+    jr z, .disableSoundChannel
     dec a
     ld [wChip8SoundTimer], a
+    jr .skipSoundDisable
 
-.skipSoundTimer:
+.disableSoundChannel:
+    ; Since ST == 0, disable channel 2
+    ld a, $00
+
+    ldh [rNR21], a
+    ldh [rNR22], a
+    ldh [rNR23], a
+    ldh [rNR24], a
+
+.skipSoundDisable:
     pop af
     ret
 

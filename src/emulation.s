@@ -1271,6 +1271,21 @@ ChipOp_FX18:
     ; Store the value in sound timer
     ld [wChip8SoundTimer], a
 
+    ; Set Channel 2 wave pattern duty to 50%
+    ld a, %10000000
+    ldh [rNR21], a
+
+    ; Set channel 2 to max volume
+    ld a, %11111000
+    ldh [rNR22], a
+
+    ; Store 1920 in the frequency data of Channel 2,
+    ; and cause a trigger event.
+    ld a, $80
+    ldh [rNR23], a
+    ld a, %10000111
+    ldh [rNR24], a
+
     jp MainLoop
 
 ; $FX1E - Add the value stored in register `VX` to register `I`.

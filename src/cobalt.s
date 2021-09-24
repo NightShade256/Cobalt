@@ -108,6 +108,18 @@ Main:
     ld a, LCDCF_ON | LCDCF_BG8000 | LCDCF_BGON
     ldh [rLCDC], a
 
+    ; Turn on the audio system
+    ld a, AUDENA_ON
+    ldh [rNR52], a
+
+    ; Map Channel 2 to SO1 and SO2, leaving out the other channels
+    ld a, AUDTERM_2_LEFT | AUDTERM_2_RIGHT
+    ldh [rNR51], a
+
+    ; Set master volume to max
+    ld a, %01110111
+    ldh [rNR50], a
+
     ; Turn on interrupts to prevent the HALT bug
     ei
 
