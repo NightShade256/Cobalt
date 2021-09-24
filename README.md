@@ -1,6 +1,6 @@
 # Cobalt
 
-Cobalt is a Chip-8 interpreter written for the Game Boy.
+Cobalt is a Chip-8 interpreter written in assembly for the Game Boy.
 
 <img src="./README/Snake.png" width="300" /> &nbsp;
 <img src="./README/Corax Test ROM.png" width="300" /> &nbsp;
@@ -9,7 +9,7 @@ Cobalt is a Chip-8 interpreter written for the Game Boy.
 
 ## Build Instructions
 
-Cobalt requires the `RGBDS` toolchain and `GNU Make` to be present.
+The `RGBDS` toolchain and `GNU Make` is required to build Cobalt from source.
 
 ```bash
 make all
