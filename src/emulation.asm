@@ -1,4 +1,5 @@
-INCLUDE "include/hardware.inc/hardware.inc"
+INCLUDE "hardware.inc"
+    rev_Check_hardware_inc 4.12
 
 SECTION "Chip8 Main Loop", ROM0
 
@@ -6,7 +7,7 @@ MainLoop::
     ; Check if instruction count for current frame is complete, and if yes
     ; wait for VBlank
     ldh a, [hInstructionsDone]
-    cp $0A
+    cp $0F
     jr nc, .haltUntilVBlank
     inc a
     ldh [hInstructionsDone], a
@@ -58,6 +59,7 @@ MainLoop::
 .haltUntilVBlank
     ; Halt till HBlank or VBlank is hit
     halt
+    nop
 
     ; Check if it was VBlank, if not halt again
     ldh a, [rLY]

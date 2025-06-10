@@ -1,4 +1,5 @@
-INCLUDE "include/hardware.inc/hardware.inc"
+INCLUDE "hardware.inc"
+    rev_Check_hardware_inc 4.12
 
 SECTION "Interrupt Vectors", ROM0[$0000]
 

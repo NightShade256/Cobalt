@@ -2,10 +2,10 @@
 
 Cobalt is a Chip-8 interpreter written in assembly for the Game Boy.
 
-<img src="./README/Snake.png" width="300" /> &nbsp;
-<img src="./README/Corax Test ROM.png" width="300" /> &nbsp;
-<img src="./README/Breakout.png" width="300" /> &nbsp;
-<img src="./README/Trip8.png" width="300" /> &nbsp;
+<img src="./README/img/Snake.png" width="300" /> &nbsp;
+<img src="./README/img/Corax Test ROM.png" width="300" /> &nbsp;
+<img src="./README/img/Breakout.png" width="300" /> &nbsp;
+<img src="./README/img/Trip8.png" width="300" /> &nbsp;
 
 ## Build Instructions
 
@@ -18,7 +18,7 @@ make all
 This will produce the ROM file in the `bin/` subdirectory along with some additional
 debugging aids.
 
-The `Snake` ROM is embedded into Cobalt by default, and the key mappings are like so,
+The `Snake` ROM from [chip8Archive](https://github.com/JohnEarnest/chip8Archive) (under the CC0 license) is embedded into Cobalt by default, and the key mappings are like so,
 
 | GB    | Chip-8 |
 | ----- | ------ |
@@ -31,7 +31,7 @@ To change the ROM file and key mappings, you need to edit the `src/rom.s` file m
 
 ## Note
 
-The `Makefile` is adapted from the [GB Boilerplate](https://github.com/ISSOtm/gb-boilerplate/) repository, which is under the MIT license. A copy of the license may be found in the `README/` subdirectory.
+The `Makefile` (with `project.mk`) is adapted from the [GB Boilerplate](https://github.com/ISSOtm/gb-boilerplate/) repository, which is licensed under the Zlib license. A copy of the license may be found in the `README/` subdirectory.
 
 ## License
 
