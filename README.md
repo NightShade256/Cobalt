@@ -2,10 +2,10 @@
 
 Cobalt is a Chip-8 interpreter written in assembly for the Game Boy (DMG).
 
-<img src="./README/img/Snake.png" width="300" /> &nbsp;
-<img src="./README/img/Corax Test ROM.png" width="300" /> &nbsp;
-<img src="./README/img/Breakout.png" width="300" /> &nbsp;
-<img src="./README/img/Trip8.png" width="300" /> &nbsp;
+<img src="./README/images/Snake.png" width="300" /> &nbsp;
+<img src="./README/images/Corax Test ROM.png" width="300" /> &nbsp;
+<img src="./README/images/Breakout.png" width="300" /> &nbsp;
+<img src="./README/images/Trip8.png" width="300" /> &nbsp;
 
 ## Build Instructions
 
