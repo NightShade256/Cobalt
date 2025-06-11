@@ -1,6 +1,6 @@
 # Cobalt
 
-Cobalt is a Chip-8 interpreter written in assembly for the Game Boy.
+Cobalt is a Chip-8 interpreter written in assembly for the Game Boy (DMG).
 
 <img src="./README/img/Snake.png" width="300" /> &nbsp;
 <img src="./README/img/Corax Test ROM.png" width="300" /> &nbsp;
@@ -9,16 +9,22 @@ Cobalt is a Chip-8 interpreter written in assembly for the Game Boy.
 
 ## Build Instructions
 
-The `RGBDS` toolchain and `GNU Make` is required to build Cobalt from source.
+The `RGBDS` toolchain and `GNU Make` are required to build Cobalt.
+
+To build the ROM, execute:
 
 ```bash
-make all
+make
 ```
 
-This will produce the ROM file in the `bin/` subdirectory along with some additional
-debugging aids.
+To clean the build directories, execute:
 
-The `Snake` ROM from [chip8Archive](https://github.com/JohnEarnest/chip8Archive) (under the CC0 license) is embedded into Cobalt by default, and the key mappings are like so,
+```bash
+make clean
+```
+
+The `Snake` ROM from [chip8Archive](https://github.com/JohnEarnest/chip8Archive) (under the CC0 license)
+is embedded into Cobalt by default, and the key mappings are like so,
 
 | GB    | Chip-8 |
 | ----- | ------ |
@@ -31,8 +37,14 @@ To change the ROM file and key mappings, you need to edit the `src/rom.s` file m
 
 ## Note
 
-The `Makefile` (with `project.mk`) is adapted from the [GB Boilerplate](https://github.com/ISSOtm/gb-boilerplate/) repository, which is licensed under the Zlib license. A copy of the license may be found in the `README/` subdirectory.
+1. The `Makefile` (with `project.mk`) is adapted from the
+   [GB Boilerplate](https://github.com/ISSOtm/gb-boilerplate/) repository, which is licensed under the
+   Zlib license. A copy of the license may be found in the `README/` subdirectory.
+
+2. Tested with RGBDS version `0.9.2` and GNU Make version `4.3`. Not tested on actual DMG hardware, do it
+   at your own risk! Needs an accurate emulator to run!
 
 ## License
 
-Cobalt is licensed under the terms of the Apache-2.0 license.
+Cobalt is licensed under the terms of the Zlib license. Earlier versions (till 1.1.0) were licensed under
+the terms of the Apache-2.0 license.
